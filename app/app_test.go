@@ -27,7 +27,7 @@ func TestAcreChainExport(t *testing.T) {
 	// Initialize the chain
 	app.InitChain(
 		abci.RequestInitChain{
-			ChainId:       "bamboo_9051-2",
+			ChainId:       "testchain-1",
 			Validators:    []abci.ValidatorUpdate{},
 			AppStateBytes: stateBytes,
 		},
