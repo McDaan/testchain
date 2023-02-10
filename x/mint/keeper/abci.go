@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/ArableProtocol/acrechain/x/mint/types"
+	"github.com/McDaan/testchain/x/mint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
