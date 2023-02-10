@@ -70,7 +70,7 @@ func (m *GenesisState) GetParams() Params {
 }
 
 func init() {
-	proto.RegisterType((*GenesisState)(nil), "acrechain.mint.v1beta1.GenesisState")
+	proto.RegisterType((*GenesisState)(nil), "testchain.mint.v1beta1.GenesisState")
 }
 
 func init() {
