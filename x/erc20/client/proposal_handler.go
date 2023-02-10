@@ -3,8 +3,8 @@ package client
 import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 
-	"github.com/ArableProtocol/acrechain/x/erc20/client/cli"
-	"github.com/ArableProtocol/acrechain/x/erc20/client/rest"
+	"github.com/McDaan/testchain/x/erc20/client/cli"
+	"github.com/McDaan/testchain/x/erc20/client/rest"
 )
 
 var (
