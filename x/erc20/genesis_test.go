@@ -16,9 +16,9 @@ import (
 	"github.com/evmos/ethermint/tests"
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
-	"github.com/ArableProtocol/acrechain/app"
-	"github.com/ArableProtocol/acrechain/x/erc20"
-	"github.com/ArableProtocol/acrechain/x/erc20/types"
+	"github.com/McDaan/testchain/app"
+	"github.com/McDaan/testchain/x/erc20"
+	"github.com/McDaan/testchain/x/erc20/types"
 )
 
 type GenesisTestSuite struct {
@@ -39,7 +39,7 @@ func (suite *GenesisTestSuite) SetupTest() {
 	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
 	suite.ctx = suite.app.BaseApp.NewContext(false, tmproto.Header{
 		Height:          1,
-		ChainID:         "bamboo_9051-1",
+		ChainID:         "testchain-1",
 		Time:            time.Now().UTC(),
 		ProposerAddress: consAddress.Bytes(),
 
