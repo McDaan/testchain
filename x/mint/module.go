@@ -26,10 +26,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/ArableProtocol/acrechain/x/mint/client/cli"
-	"github.com/ArableProtocol/acrechain/x/mint/keeper"
-	"github.com/ArableProtocol/acrechain/x/mint/simulation"
-	"github.com/ArableProtocol/acrechain/x/mint/types"
+	"github.com/McDaan/testchain/x/mint/client/cli"
+	"github.com/McDaan/testchain/x/mint/keeper"
+	"github.com/McDaan/testchain/x/mint/simulation"
+	"github.com/McDaan/testchain/x/mint/types"
 )
 
 var (
