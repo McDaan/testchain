@@ -10,16 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/ArableProtocol/acrechain/app"
-	acred "github.com/ArableProtocol/acrechain/cmd/acred"
+	testd "github.com/McDaan/testchain/cmd/testd"
 )
 
 func TestInitCmd(t *testing.T) {
-	rootCmd, _ := acred.NewRootCmd()
+	rootCmd, _ := testd.NewRootCmd()
 	rootCmd.SetArgs([]string{
 		"init",      // Test the init cmd
 		"acre-test", // Moniker
 		fmt.Sprintf("--%s=%s", cli.FlagOverwrite, "true"), // Overwrite genesis.json, in case it already exists
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, "acre_9051-1"),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, "testchain-1"),
 	})
 
 	err := svrcmd.Execute(rootCmd, app.DefaultNodeHome)
@@ -27,7 +27,7 @@ func TestInitCmd(t *testing.T) {
 }
 
 func TestAddKeyLedgerCmd(t *testing.T) {
-	rootCmd, _ := acred.NewRootCmd()
+	rootCmd, _ := testd.NewRootCmd()
 	rootCmd.SetArgs([]string{
 		"keys",
 		"add",
