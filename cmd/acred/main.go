@@ -7,8 +7,8 @@ import (
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/ArableProtocol/acrechain/app"
-	cmdcfg "github.com/ArableProtocol/acrechain/cmd/config"
+	"github.com/McDaan/testchain/app"
+	cmdcfg "github.com/McDaan/testchain/cmd/config"
 )
 
 func main() {
