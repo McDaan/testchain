@@ -3,13 +3,13 @@ package keeper_test
 import (
 	"time"
 
-	"github.com/ArableProtocol/acrechain/x/mint/types"
+	"github.com/McDaan/testchain/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (suite *KeeperTestSuite) TestParamsGetSet() {
 	params := types.Params{
-		MintDenom:                "aacre",
+		MintDenom:                "utest",
 		GenesisDailyProvisions:   types.DefaultParams().GenesisDailyProvisions,
 		ReductionPeriodInSeconds: 1000,
 		ReductionFactor:          sdk.NewDecWithPrec(66, 2),
