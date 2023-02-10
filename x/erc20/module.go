@@ -18,9 +18,9 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/ArableProtocol/acrechain/x/erc20/client/cli"
-	"github.com/ArableProtocol/acrechain/x/erc20/keeper"
-	"github.com/ArableProtocol/acrechain/x/erc20/types"
+	"github.com/McDaan/testchain/x/erc20/client/cli"
+	"github.com/McDaan/testchain/x/erc20/keeper"
+	"github.com/McDaan/testchain/x/erc20/types"
 )
 
 // type check to ensure the interface is properly implemented
