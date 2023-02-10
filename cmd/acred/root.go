@@ -39,13 +39,13 @@ import (
 	servercfg "github.com/evmos/ethermint/server/config"
 	srvflags "github.com/evmos/ethermint/server/flags"
 
-	"github.com/ArableProtocol/acrechain/app"
-	cmdcfg "github.com/ArableProtocol/acrechain/cmd/config"
-	acrekr "github.com/ArableProtocol/acrechain/crypto/keyring"
+	"github.com/McDaan/testchain/app"
+	cmdcfg "github.com/McDaan/testchain/cmd/config"
+	testkr "github.com/McDaan/testchain/crypto/keyring"
 )
 
 const (
-	EnvPrefix = "ACRE"
+	EnvPrefix = "TEST"
 )
 
 // NewRootCmd creates a new root command for acred. It is called once in the
@@ -61,12 +61,12 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
 		WithHomeDir(app.DefaultNodeHome).
-		WithKeyringOptions(acrekr.Option()).
+		WithKeyringOptions(testkr.Option()).
 		WithViper(EnvPrefix)
 
 	rootCmd := &cobra.Command{
 		Use:   app.Name,
-		Short: "Acrechain Daemon",
+		Short: "Testchain Daemon",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
@@ -251,7 +251,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		panic(err)
 	}
 
-	acreApp := app.NewAcreChain(
+	testApp := app.NewTestChain(
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
@@ -272,7 +272,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		baseapp.SetIAVLDisableFastNode(cast.ToBool(appOpts.Get(sdkserver.FlagIAVLFastNode))),
 	)
 
-	return acreApp
+	return testApp
 }
 
 // appExport creates a new simapp (optionally at a given height)
@@ -288,14 +288,14 @@ func (a appCreator) appExport(
 	}
 
 	if height != -1 {
-		acreApp = app.NewAcreChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 
 		if err := acreApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		acreApp = app.NewAcreChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 	}
 
-	return acreApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return testApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
 }
