@@ -5,7 +5,7 @@ import (
 )
 
 // RootCodespace is the codespace for all errors defined in this package
-const RootCodespace = "acreapp"
+const RootCodespace = "testapp"
 
 // root error codes for acreapp
 const (
