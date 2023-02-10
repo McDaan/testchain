@@ -1,10 +1,10 @@
 syntax = "proto3";
-package acrechain.erc20.v1;
+package testchain.erc20.v1;
 
-import "acrechain/erc20/erc20.proto";
+import "testchain/erc20/erc20.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/ArableProtocol/acrechain/x/erc20/types";
+option go_package = "github.com/McDaan/testchain/x/erc20/types";
 
 // GenesisState defines the module's genesis state.
 message GenesisState {
