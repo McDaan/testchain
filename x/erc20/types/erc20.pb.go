@@ -327,14 +327,14 @@ func (m *ToggleTokenConversionProposal) GetToken() string {
 }
 
 func init() {
-	proto.RegisterEnum("acrechain.erc20.v1.Owner", Owner_name, Owner_value)
-	proto.RegisterType((*TokenPair)(nil), "acrechain.erc20.v1.TokenPair")
-	proto.RegisterType((*RegisterCoinProposal)(nil), "acrechain.erc20.v1.RegisterCoinProposal")
-	proto.RegisterType((*RegisterERC20Proposal)(nil), "acrechain.erc20.v1.RegisterERC20Proposal")
-	proto.RegisterType((*ToggleTokenConversionProposal)(nil), "acrechain.erc20.v1.ToggleTokenConversionProposal")
+	proto.RegisterEnum("testchain.erc20.v1.Owner", Owner_name, Owner_value)
+	proto.RegisterType((*TokenPair)(nil), "testchain.erc20.v1.TokenPair")
+	proto.RegisterType((*RegisterCoinProposal)(nil), "testchain.erc20.v1.RegisterCoinProposal")
+	proto.RegisterType((*RegisterERC20Proposal)(nil), "testchain.erc20.v1.RegisterERC20Proposal")
+	proto.RegisterType((*ToggleTokenConversionProposal)(nil), "testchain.erc20.v1.ToggleTokenConversionProposal")
 }
 
-func init() { proto.RegisterFile("acrechain/erc20/erc20.proto", fileDescriptor_46530f3c1c0397c3) }
+func init() { proto.RegisterFile("testchain/erc20/erc20.proto", fileDescriptor_46530f3c1c0397c3) }
 
 var fileDescriptor_46530f3c1c0397c3 = []byte{
 	// 492 bytes of a gzipped FileDescriptorProto
