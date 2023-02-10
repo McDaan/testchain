@@ -136,11 +136,11 @@ func (m *Params) GetEnableEVMHook() bool {
 }
 
 func init() {
-	proto.RegisterType((*GenesisState)(nil), "acrechain.erc20.v1.GenesisState")
-	proto.RegisterType((*Params)(nil), "acrechain.erc20.v1.Params")
+	proto.RegisterType((*GenesisState)(nil), "testchain.erc20.v1.GenesisState")
+	proto.RegisterType((*Params)(nil), "testchain.erc20.v1.Params")
 }
 
-func init() { proto.RegisterFile("acrechain/erc20/genesis.proto", fileDescriptor_fac55b7e6e432d38) }
+func init() { proto.RegisterFile("testchain/erc20/genesis.proto", fileDescriptor_fac55b7e6e432d38) }
 
 var fileDescriptor_fac55b7e6e432d38 = []byte{
 	// 309 bytes of a gzipped FileDescriptorProto
