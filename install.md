@@ -27,11 +27,11 @@ export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export GO111MODULE=on
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-export CHAIN_ID=bamboo_9051-1
-export SERVICE_NAME=acred
-export PROJECT_PATH=.acred
-export PROJECT_NAME=acred
-export TOKEN=aacre
+export CHAIN_ID=testchain-1
+export SERVICE_NAME=testd
+export PROJECT_PATH=.testd
+export PROJECT_NAME=testd
+export TOKEN=utest
 export KEY_NAME=write_your_key_name
 export MONIKER_NAME=write_your_moniker_name
 EOF
@@ -47,14 +47,14 @@ go version
 # Build
 
 ```
-git clone https://github.com/ArableProtocol/acrechain && cd acrechain
-git checkout testnet_bamboo
+git clone https://github.com/McDaan/testchain && cd testchain
+git checkout testnet_testchain
 make install
 
 ```
 
 ```
-acred version --long
+testd version --long
 
 # name: acre
 # server_name: acred
@@ -99,7 +99,7 @@ EOF
 # Download genesis
 
 ```
-wget -O $HOME/$PROJECT_PATH/config/genesis.json https://raw.githubusercontent.com/ArableProtocol/acrechain/testnet_bamboo/networks/bamboo/genesis.json
+wget -O $HOME/$PROJECT_PATH/config/genesis.json https://raw.githubusercontent.com/McDaan/testchain/testnet_testchain/networks/testchain/genesis.json
 
 PEERS="44dd124ca34742245ad906f9f6ea377fae3af0cf@168.100.9.100:26656,6477921cdd4ba4503a1a2ff1f340c9d6a0e7b4a0@168.100.10.133:26656,9b53496211e75dbf33680b75e617830e874c8d93@168.100.8.9:26656,c55d79d6f76045ff7b68dc2bf6655348ebbfd795@168.100.8.60:26656"
 sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/$PROJECT_PATH/config/config.toml
