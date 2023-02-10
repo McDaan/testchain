@@ -1,6 +1,6 @@
 # Guide
 
-acred testnet init-files --keyring-backend=test --chain-id="bamboo_9051-1" --v=4 --output-dir ./testnet --starting-ip-address 192.168.10.2
+testd testnet init-files --keyring-backend=test --chain-id="testchain-1" --v=4 --output-dir ./testnet --starting-ip-address 192.168.10.2
 
 ## Get server addresses
 
@@ -14,7 +14,7 @@ ssh root@168.100.10.133
 ```
 rm -rf testnet.zip
 rm -rf testnet/
-rm -rf acrehome/
+rm -rf testhome/
 ```
 
 scp testnet.zip root@168.100.9.100:~/
@@ -53,33 +53,33 @@ unzip testnet.zip
 ## Setup home folder for daemon
 
 ```
-mv testnet/node0/acred/ acrehome/
-mv testnet/node1/acred/ acrehome/
-mv testnet/node2/acred/ acrehome/
-mv testnet/node3/acred/ acrehome/
+mv testnet/node0/testd/ testhome/
+mv testnet/node1/testd/ testhome/
+mv testnet/node2/testd/ testhome/
+mv testnet/node3/testd/ testhome/
 ```
 
 ## Install daemon on server
 
-git clone https://github.com/ArableProtocol/acrechain.git
-cd acrechain/
-git checkout testnet_bamboo
-go install ./cmd/acred/
+git clone https://github.com/McDaan/testchain.git
+cd testchain/
+git checkout testnet_testchain
+go install ./cmd/testd/
 
 ## Setup systemctl
 
-nano /etc/systemd/system/acred.service
+nano /etc/systemd/system/testd.service
 
 ```
 [Unit]
-Description=Acred Node
+Description=Testd Node
 After=network.target
 
 [Service]
 Type=simple
 User=root
 WorkingDirectory=/root
-ExecStart=/root/go/bin/acred start --home=/root/acrehome
+ExecStart=/root/go/bin/testd start --home=/root/testhome
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
@@ -88,25 +88,25 @@ LimitNOFILE=4096
 WantedBy=multi-user.target
 ```
 
-systemctl start acred
-systemctl stop acred
-journalctl -u acred.service
+systemctl start testd
+systemctl stop testd
+journalctl -u testd.service
 
-acred tx slashing unjail --from=node0 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
-acred tx slashing unjail --from=node1 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
-acred tx slashing unjail --from=node2 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
-acred tx slashing unjail --from=node3 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
+testd tx slashing unjail --from=node0 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
+testd tx slashing unjail --from=node1 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
+testd tx slashing unjail --from=node2 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
+testd tx slashing unjail --from=node3 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
 
-acred keys add node0 --keyring-backend=test --home=/root/acrehome --recover
+testd keys add node0 --keyring-backend=test --home=/root/testhome --recover
 about decrease option engine switch often assume raw lonely drink phone hard veteran fantasy lazy economy hat range law antique orchard submit drama winner
 
-acred keys add node1 --keyring-backend=test --home=/root/acrehome --recover
+testd keys add node1 --keyring-backend=test --home=/root/testhome --recover
 diagram glide install lounge damage mammal load cheap concert lizard pulse garlic web half tower wrap human trade artwork final layer purse sibling music
 
-acred tx bank send node1 acre1n2cn0y5m38pvtaru5slf6u5psmgnmu6fk6a7ld 100000000000000000000aacre --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
-acred tx bank send node1 acre1ljvjw0d6jce83nclnfn3qwla4najyty0n90gl9 100000000000000000000aacre --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
+testd tx bank send node1 acre1n2cn0y5m38pvtaru5slf6u5psmgnmu6fk6a7ld 100000000000000000000utest --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
+testd tx bank send node1 acre1ljvjw0d6jce83nclnfn3qwla4najyty0n90gl9 100000000000000000000utest --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
 
-acred tx gov submit-proposal param-change proposal.json --from=node0 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
+testd tx gov submit-proposal param-change proposal.json --from=node0 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
 
 ```
 {
@@ -116,10 +116,10 @@ acred tx gov submit-proposal param-change proposal.json --from=node0 --keyring-b
     {
       "subspace": "mint",
       "key": "MintDenom",
-      "value": "aacre"
+      "value": "atest"
     }
   ],
-  "deposit": "100000000000000000000aacre"
+  "deposit": "100000000000000000000utest"
 }
 ```
 
@@ -128,15 +128,15 @@ goal_bonded: "0.670000000000000000"
 inflation_max: "0.200000000000000000"
 inflation_min: "0.070000000000000000"
 inflation_rate_change: "0.130000000000000000"
-mint_denom: aacre
+mint_denom: utest
 
-acred tx gov vote 1 Yes --from=node0 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
+testd tx gov vote 1 Yes --from=node0 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
 
-acred keys add node1 --keyring-backend=test --home=/root/acrehome --recover
-acred tx gov vote 1 Yes --from=node1 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
+testd keys add node1 --keyring-backend=test --home=/root/testhome --recover
+testd tx gov vote 1 Yes --from=node1 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
 
-acred keys add node2 --keyring-backend=test --home=/root/acrehome --recover
-acred tx gov vote 1 Yes --from=node2 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
+testd keys add node2 --keyring-backend=test --home=/root/testhome --recover
+testd tx gov vote 1 Yes --from=node2 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
 
-acred keys add node3 --keyring-backend=test --home=/root/acrehome --recover
-acred tx gov vote 1 Yes --from=node3 --keyring-backend=test --chain-id="bamboo_9051-1" --home=/root/acrehome --broadcast-mode=block -y
+testd keys add node3 --keyring-backend=test --home=/root/testhome --recover
+testd tx gov vote 1 Yes --from=node3 --keyring-backend=test --chain-id="testchain-1" --home=/root/testhome --broadcast-mode=block -y
