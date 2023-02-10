@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	ethermint "github.com/evmos/ethermint/types"
 
-	"github.com/ArableProtocol/acrechain/x/erc20/types"
+	"github.com/McDaan/testchain/x/erc20/types"
 )
 
 var _ types.QueryServer = Keeper{}
