@@ -19,11 +19,11 @@ import (
 
 	ibcgotesting "github.com/cosmos/ibc-go/v3/testing"
 
-	acreapp "github.com/ArableProtocol/acrechain/app"
+	testapp "github.com/McDaan/testchain/app"
 	ethermint "github.com/evmos/ethermint/types"
 )
 
-var DefaultTestingAppInit func() (ibcgotesting.TestingApp, map[string]json.RawMessage) = acreapp.SetupTestingApp
+var DefaultTestingAppInit func() (ibcgotesting.TestingApp, map[string]json.RawMessage) = testapp.SetupTestingApp
 
 // SetupWithGenesisValSet initializes a new SimApp with a validator set and genesis accounts
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
