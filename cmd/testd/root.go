@@ -290,7 +290,7 @@ func (a appCreator) appExport(
 	if height != -1 {
 		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 
-		if err := acreApp.LoadHeight(height); err != nil {
+		if err := testApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
