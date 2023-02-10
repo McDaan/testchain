@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 
-	"github.com/ArableProtocol/acrechain/x/erc20/keeper"
-	"github.com/ArableProtocol/acrechain/x/erc20/types"
+	"github.com/McDaan/testchain/x/erc20/keeper"
+	"github.com/McDaan/testchain/x/erc20/types"
 )
 
 // InitGenesis import module genesis
