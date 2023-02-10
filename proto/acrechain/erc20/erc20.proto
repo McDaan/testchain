@@ -1,9 +1,9 @@
 syntax = "proto3";
-package acrechain.erc20.v1;
+package testchain.erc20.v1;
 
 import "gogoproto/gogo.proto";
 import "cosmos/bank/v1beta1/bank.proto";
-option go_package = "github.com/ArableProtocol/acrechain/x/erc20/types";
+option go_package = "github.com/McDaan/testchain/x/erc20/types";
 
 // Owner enumerates the ownership of a ERC20 contract.
 enum Owner {
