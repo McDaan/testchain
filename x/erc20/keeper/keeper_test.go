@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	minttypes "github.com/ArableProtocol/acrechain/x/mint/types"
+	minttypes "github.com/McDaan/testchain/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -44,9 +44,9 @@ import (
 	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
 	"github.com/tendermint/tendermint/version"
 
-	"github.com/ArableProtocol/acrechain/app"
-	"github.com/ArableProtocol/acrechain/contracts"
-	"github.com/ArableProtocol/acrechain/x/erc20/types"
+	"github.com/McDaan/testchain/app"
+	"github.com/McDaan/testchain/contracts"
+	"github.com/McDaan/testchain/x/erc20/types"
 )
 
 type KeeperTestSuite struct {
