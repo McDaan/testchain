@@ -15,7 +15,7 @@ import (
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/libs/cli"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
+	
 	"github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/go-bip39"
