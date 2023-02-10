@@ -1,6 +1,6 @@
 package keeper_test
 
-import "github.com/ArableProtocol/acrechain/x/erc20/types"
+import "github.com/McDaan/testchain/x/erc20/types"
 
 func (suite *KeeperTestSuite) TestParams() {
 	params := suite.app.Erc20Keeper.GetParams(suite.ctx)
