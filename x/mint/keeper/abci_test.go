@@ -3,13 +3,13 @@ package keeper_test
 import (
 	"time"
 
-	"github.com/ArableProtocol/acrechain/x/mint/types"
+	"github.com/McDaan/testchain/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (suite *KeeperTestSuite) TestEndBlocker() {
 	params := types.Params{
-		MintDenom:                "aacre",
+		MintDenom:                "utest",
 		GenesisDailyProvisions:   types.DefaultParams().GenesisDailyProvisions,
 		ReductionPeriodInSeconds: 1000,
 		ReductionFactor:          sdk.NewDecWithPrec(66, 2),
@@ -69,7 +69,7 @@ func (suite *KeeperTestSuite) TestEndBlocker() {
 	reductionTime = suite.app.MintKeeper.GetNextReductionTime(suite.ctx)
 	suite.Require().Equal(reductionTime, params.NextRewardsReductionTime)
 	communityPool = suite.app.DistrKeeper.GetFeePoolCommunityCoins(suite.ctx)
-	suite.Require().Equal(communityPool.String(), "7610342592592592592.000000000000000000aacre")
+	suite.Require().Equal(communityPool.String(), "7610342592592592592.000000000000000000utest")
 
 	// run 4th endblocker after reduction time
 	suite.ctx = suite.ctx.WithBlockTime(now.Add(time.Second * 1001))
@@ -84,5 +84,5 @@ func (suite *KeeperTestSuite) TestEndBlocker() {
 	params = suite.app.MintKeeper.GetParams(suite.ctx)
 	suite.Require().Equal(params.NextRewardsReductionTime, reductionTime)
 	communityPool = suite.app.DistrKeeper.GetFeePoolCommunityCoins(suite.ctx)
-	suite.Require().Equal(communityPool.String(), "5020390801481481481481.000000000000000000aacre")
+	suite.Require().Equal(communityPool.String(), "5020390801481481481481.000000000000000000utest")
 }
