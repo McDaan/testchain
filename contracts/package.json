@@ -15,12 +15,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/McDaan/testchain.git"
+    "url": "git+https://github.com/evmos/evmos.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/McDaan/testchain/issues"
+    "url": "https://github.com/evmos/evmos/issues"
   },
-  "homepage": "https://github.com/McDaan/testchain#readme"
+  "homepage": "https://github.com/evmos/evmos#readme"
 }
