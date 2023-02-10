@@ -16,9 +16,9 @@ import (
 	"github.com/evmos/ethermint/encoding"
 )
 
-func TestAcreChainExport(t *testing.T) {
+func TestTestChainExport(t *testing.T) {
 	db := dbm.NewMemDB()
-	app := NewAcreChain(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	app := NewTestChain(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
 
 	genesisState := NewDefaultGenesisState()
 	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
@@ -35,7 +35,7 @@ func TestAcreChainExport(t *testing.T) {
 	app.Commit()
 
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := NewAcreChain(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	app2 := NewTestChain(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
 	_, err = app2.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }
