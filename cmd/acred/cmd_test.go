@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/stretchr/testify/require"
 
-	"github.com/ArableProtocol/acrechain/app"
+	"github.com/McDaan/testchain/app"
 	testd "github.com/McDaan/testchain/cmd/testd"
 )
 
