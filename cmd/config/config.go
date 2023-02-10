@@ -8,7 +8,7 @@ import (
 
 const (
 	// Bech32Prefix defines the Bech32 prefix used for EthAccounts
-	Bech32Prefix = "acre"
+	Bech32Prefix = "test"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix
@@ -26,9 +26,9 @@ const (
 
 var (
 	// DisplayDenom defines the denomination displayed to users in client applications.
-	DisplayDenom = "acre"
+	DisplayDenom = "test"
 	// BaseDenom defines to the default denomination used in Acrechain (staking, EVM, governance, etc.)
-	BaseDenom = "aacre"
+	BaseDenom = "utest"
 	// decimal reduction 10^18
 	DecimalReduction = sdk.NewInt(1000_000_000).Mul(sdk.NewInt(1000_000_000)) // 10^18
 )
