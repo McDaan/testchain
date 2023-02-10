@@ -200,12 +200,12 @@ func (m *Params) GetMintingRewardsDistributionStartTime() int64 {
 }
 
 func init() {
-	proto.RegisterType((*Minter)(nil), "acrechain.mint.v1beta1.Minter")
-	proto.RegisterType((*DistributionProportions)(nil), "acrechain.mint.v1beta1.DistributionProportions")
-	proto.RegisterType((*Params)(nil), "acrechain.mint.v1beta1.Params")
+	proto.RegisterType((*Minter)(nil), "testchain.mint.v1beta1.Minter")
+	proto.RegisterType((*DistributionProportions)(nil), "testchain.mint.v1beta1.DistributionProportions")
+	proto.RegisterType((*Params)(nil), "testchain.mint.v1beta1.Params")
 }
 
-func init() { proto.RegisterFile("acrechain/mint/v1beta1/mint.proto", fileDescriptor_2fa6c02acf2a0105) }
+func init() { proto.RegisterFile("testchain/mint/v1beta1/mint.proto", fileDescriptor_2fa6c02acf2a0105) }
 
 var fileDescriptor_2fa6c02acf2a0105 = []byte{
 	// 538 bytes of a gzipped FileDescriptorProto
