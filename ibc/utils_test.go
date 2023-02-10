@@ -6,5 +6,5 @@ import (
 
 func init() {
 	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("acre", "acrepub")
+	cfg.SetBech32PrefixForAccount("test", "testpub")
 }
