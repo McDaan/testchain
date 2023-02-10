@@ -16,7 +16,7 @@ import (
 	"github.com/evmos/ethermint/encoding"
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
-	"github.com/ArableProtocol/acrechain/cmd/config"
+	"github.com/McDaan/testchain/cmd/config"
 )
 
 func init() {
@@ -60,7 +60,7 @@ func Setup(
 	feemarketGenesis *feemarkettypes.GenesisState,
 ) *AcreApp {
 	db := dbm.NewMemDB()
-	app := NewAcreChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
