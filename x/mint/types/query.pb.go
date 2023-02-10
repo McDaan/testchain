@@ -192,14 +192,14 @@ func (m *QueryDailyProvisionsResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryDailyProvisionsResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*QueryParamsRequest)(nil), "acrechain.mint.v1beta1.QueryParamsRequest")
-	proto.RegisterType((*QueryParamsResponse)(nil), "acrechain.mint.v1beta1.QueryParamsResponse")
-	proto.RegisterType((*QueryDailyProvisionsRequest)(nil), "acrechain.mint.v1beta1.QueryDailyProvisionsRequest")
-	proto.RegisterType((*QueryDailyProvisionsResponse)(nil), "acrechain.mint.v1beta1.QueryDailyProvisionsResponse")
+	proto.RegisterType((*QueryParamsRequest)(nil), "testchain.mint.v1beta1.QueryParamsRequest")
+	proto.RegisterType((*QueryParamsResponse)(nil), "testchain.mint.v1beta1.QueryParamsResponse")
+	proto.RegisterType((*QueryDailyProvisionsRequest)(nil), "testchain.mint.v1beta1.QueryDailyProvisionsRequest")
+	proto.RegisterType((*QueryDailyProvisionsResponse)(nil), "testchain.mint.v1beta1.QueryDailyProvisionsResponse")
 }
 
 func init() {
-	proto.RegisterFile("acrechain/mint/v1beta1/query.proto", fileDescriptor_180eee932334b6dc)
+	proto.RegisterFile("testchain/mint/v1beta1/query.proto", fileDescriptor_180eee932334b6dc)
 }
 
 var fileDescriptor_180eee932334b6dc = []byte{
@@ -260,7 +260,7 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 
 func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
 	out := new(QueryParamsResponse)
-	err := c.cc.Invoke(ctx, "/acrechain.mint.v1beta1.Query/Params", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/testchain.mint.v1beta1.Query/Params", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +269,7 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 
 func (c *queryClient) DailyProvisions(ctx context.Context, in *QueryDailyProvisionsRequest, opts ...grpc.CallOption) (*QueryDailyProvisionsResponse, error) {
 	out := new(QueryDailyProvisionsResponse)
-	err := c.cc.Invoke(ctx, "/acrechain.mint.v1beta1.Query/DailyProvisions", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/testchain.mint.v1beta1.Query/DailyProvisions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -309,7 +309,7 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/acrechain.mint.v1beta1.Query/Params",
+		FullMethod: "/testchain.mint.v1beta1.Query/Params",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
@@ -327,7 +327,7 @@ func _Query_DailyProvisions_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/acrechain.mint.v1beta1.Query/DailyProvisions",
+		FullMethod: "/testchain.mint.v1beta1.Query/DailyProvisions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).DailyProvisions(ctx, req.(*QueryDailyProvisionsRequest))
@@ -336,7 +336,7 @@ func _Query_DailyProvisions_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 var _Query_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "acrechain.mint.v1beta1.Query",
+	ServiceName: "testchain.mint.v1beta1.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -349,7 +349,7 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "acrechain/mint/v1beta1/query.proto",
+	Metadata: "testchain/mint/v1beta1/query.proto",
 }
 
 func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
