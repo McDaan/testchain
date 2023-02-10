@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ArableProtocol/acrechain/cmd/config"
-	appparams "github.com/ArableProtocol/acrechain/cmd/config"
-	minttypes "github.com/ArableProtocol/acrechain/x/mint/types"
+	"github.com/McDaan/testchain/cmd/config"
+	appparams "github.com/McDaan/testchain/cmd/config"
+	minttypes "github.com/McDaan/testchain/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -35,9 +35,9 @@ func GenerateGenesisCmd(defaultNodeHome string, mbm module.BasicManager) *cobra.
 		Short: "Generate a genesis file with initial setup",
 		Long: `Generate a genesis file with initial setup.
 Example:
-	acred generate-genesis acre_9052-1
+	acred generate-genesis testchain-1
 	- Check input genesis:
-		file is at ~/.acred/config/genesis.json
+		file is at ~/.testd/config/genesis.json
 `,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -92,7 +92,7 @@ func PrepareGenesis(clientCtx client.Context, appState map[string]json.RawMessag
 
 	// chain params genesis
 	genDoc.ChainID = chainID
-	genDoc.GenesisTime = time.Unix(1669042800, 0) // Monday, November 21, 2022 3:00:00 PM GMT+0000
+	genDoc.GenesisTime = time.Unix(1676066400, 0) // Friday, February 10, 2023 09:00:00 PM GMT+0000
 	genDoc.ConsensusParams = tmtypes.DefaultConsensusParams()
 	genDoc.ConsensusParams.Block.MaxBytes = 21 * 1024 * 1024
 	genDoc.ConsensusParams.Block.MaxGas = 300_000_000
@@ -101,8 +101,8 @@ func PrepareGenesis(clientCtx client.Context, appState map[string]json.RawMessag
 	mintGenState := minttypes.DefaultGenesisState()
 	mintGenState.Params = minttypes.DefaultParams()
 	mintGenState.Params.MintDenom = appparams.BaseDenom
-	mintGenState.Params.MintingRewardsDistributionStartTime = 1671033600 // Wed Dec 14 2022 16:00:00 GMT+0000
-	mintGenState.Params.NextRewardsReductionTime = 1676390400            // Tue Feb 14 2023 16:00:00 GMT+0000
+	mintGenState.Params.MintingRewardsDistributionStartTime = 1676131200 // Fri Feb 11 2023 15:00:00 GMT+0000
+	mintGenState.Params.NextRewardsReductionTime = 1685631600            // Thu Jun 01 2023 15:00:00 GMT+0000
 
 	mintGenStateBz, err := cdc.MarshalJSON(mintGenState)
 	if err != nil {
@@ -125,7 +125,7 @@ func PrepareGenesis(clientCtx client.Context, appState map[string]json.RawMessag
 	bankGenState := banktypes.DefaultGenesisState()
 	bankGenState.Params = banktypes.DefaultParams()
 
-	bankGenState.Supply = sdk.NewCoins(sdk.NewCoin(appparams.BaseDenom, sdk.NewInt(350_000_000).Mul(config.DecimalReduction))) // 350M ACRE
+	bankGenState.Supply = sdk.NewCoins(sdk.NewCoin(appparams.BaseDenom, sdk.NewInt(350_000_000).Mul(config.DecimalReduction))) // 350M TEST
 
 	genAccounts := []authtypes.GenesisAccount{}
 
@@ -201,7 +201,7 @@ func PrepareGenesis(clientCtx client.Context, appState map[string]json.RawMessag
 	}
 
 	totalValidatorInitialCoins := sdk.NewCoins()
-	validatorInitialCoins := sdk.NewCoins(sdk.NewCoin(appparams.BaseDenom, sdk.NewInt(120).Mul(config.DecimalReduction))) // 120 ACRE
+	validatorInitialCoins := sdk.NewCoins(sdk.NewCoin(appparams.BaseDenom, sdk.NewInt(120).Mul(config.DecimalReduction))) // 120 TEST
 	for _, address := range genesisValidators {
 		bankGenState.Balances = append(bankGenState.Balances, banktypes.Balance{
 			Address: address,
@@ -270,7 +270,7 @@ func PrepareGenesis(clientCtx client.Context, appState map[string]json.RawMessag
 	govGenState := govtypes.DefaultGenesisState()
 	defaultGovParams := govtypes.DefaultParams()
 	govGenState.DepositParams = defaultGovParams.DepositParams
-	govGenState.DepositParams.MinDeposit = sdk.Coins{sdk.NewCoin(appparams.BaseDenom, sdk.NewInt(500).Mul(config.DecimalReduction))} // 500 ACRE
+	govGenState.DepositParams.MinDeposit = sdk.Coins{sdk.NewCoin(appparams.BaseDenom, sdk.NewInt(500).Mul(config.DecimalReduction))} // 500 TEST
 	govGenState.TallyParams = defaultGovParams.TallyParams
 	govGenState.VotingParams = defaultGovParams.VotingParams
 	govGenState.VotingParams.VotingPeriod = time.Hour * 24 * 2 // 2 days
@@ -294,7 +294,7 @@ func PrepareGenesis(clientCtx client.Context, appState map[string]json.RawMessag
 
 	// crisis module genesis
 	crisisGenState := crisistypes.DefaultGenesisState()
-	crisisGenState.ConstantFee = sdk.NewCoin(appparams.BaseDenom, sdk.NewInt(1).Mul(config.DecimalReduction)) // 1 ACRE
+	crisisGenState.ConstantFee = sdk.NewCoin(appparams.BaseDenom, sdk.NewInt(1).Mul(config.DecimalReduction)) // 1 TEST
 	crisisGenStateBz, err := cdc.MarshalJSON(crisisGenState)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to marshal crisis genesis state: %w", err)
