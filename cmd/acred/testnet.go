@@ -43,9 +43,9 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 
-	cmdcfg "github.com/ArableProtocol/acrechain/cmd/config"
-	acrekr "github.com/ArableProtocol/acrechain/crypto/keyring"
-	"github.com/ArableProtocol/acrechain/testutil/network"
+	cmdcfg "github.com/McDaan/testchain/cmd/config"
+	testkr "github.com/McDaan/testchain/crypto/keyring"
+	"github.com/McDaan/testchain/testutil/network"
 )
 
 var (
@@ -152,7 +152,7 @@ Example:
 
 	addTestnetFlagsToCmd(cmd)
 	cmd.Flags().String(flagNodeDirPrefix, "node", "Prefix the directory name for each node with (node results in node0, node1, ...)")
-	cmd.Flags().String(flagNodeDaemonHome, "acred", "Home directory of the node's daemon configuration")
+	cmd.Flags().String(flagNodeDaemonHome, "testd", "Home directory of the node's daemon configuration")
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1", "Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|test)")
 
@@ -169,7 +169,7 @@ and generate "v" directories, populated with necessary validator configuration f
 (private validator, genesis, config, etc.).
 
 Example:
-	acred testnet --v 4 --output-dir ./.testnets
+	testd testnet --v 4 --output-dir ./.testnets
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			args := startArgs{}
@@ -211,7 +211,7 @@ func initTestnetFiles(
 	args initArgs,
 ) error {
 	if args.chainID == "" {
-		args.chainID = fmt.Sprintf("acre_%d-1", tmrand.Int63n(9999999999999)+1)
+		args.chainID = fmt.Sprintf("testchain-1", tmrand.Int63n(9999999999999)+1)
 	}
 
 	nodeIDs := make([]string, args.numValidators)
@@ -263,7 +263,7 @@ func initTestnetFiles(
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
-		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, acrekr.Option())
+		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, testkr.Option())
 		if err != nil {
 			return err
 		}
