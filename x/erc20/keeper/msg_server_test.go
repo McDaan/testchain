@@ -9,8 +9,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/ArableProtocol/acrechain/x/erc20/keeper"
-	"github.com/ArableProtocol/acrechain/x/erc20/types"
+	"github.com/McDaan/testchain/x/erc20/keeper"
+	"github.com/McDaan/testchain/x/erc20/types"
 	"github.com/evmos/ethermint/x/evm/statedb"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 )
