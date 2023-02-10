@@ -1,4 +1,4 @@
-module github.com/ArableProtocol/acrechain
+module github.com/McDaan/testchain
 
 go 1.18
 
