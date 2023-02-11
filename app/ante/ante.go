@@ -13,13 +13,6 @@ import (
 	ethante "github.com/evmos/ethermint/app/ante"
 )
 
-type HandlerOptions struct {
-	authante.HandlerOptions
-	IBCKeeper         *ibckeeper.Keeper
-	TxCounterStoreKey sdk.StoreKey
-	WasmConfig        wasmtypes.WasmConfig
-}
-
 // NewAnteHandler returns an ante handler responsible for attempting to route an
 // Ethereum or SDK transaction to an internal ante handler for performing
 // transaction-level processing (e.g. fee payment, signature verification) before
