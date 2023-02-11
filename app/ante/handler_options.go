@@ -15,7 +15,7 @@ import (
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 )
 
-// HandlerOptions defines the list of module keepers required to run the Acrechain
+// HandlerOptions defines the list of module keepers required to run the Testchain
 // AnteHandler decorators.
 type HandlerOptions struct {
 	AccountKeeper   evmtypes.AccountKeeper
@@ -28,6 +28,7 @@ type HandlerOptions struct {
 	SigGasConsumer  func(meter sdk.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
 	Cdc             codec.BinaryCodec
 	MaxTxGasWanted  uint64
+	WasmConfig      wasmtypes.WasmConfig
 }
 
 // Validate checks if the keepers are defined
