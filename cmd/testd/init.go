@@ -28,6 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
 )
 
 type printInfo struct {
