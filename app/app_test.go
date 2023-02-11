@@ -27,7 +27,7 @@ func TestTestChainExport(t *testing.T) {
 	// Initialize the chain
 	app.InitChain(
 		abci.RequestInitChain{
-			ChainId:       "testchain-1",
+			ChainId:       "testchain_9100-1",
 			Validators:    []abci.ValidatorUpdate{},
 			AppStateBytes: stateBytes,
 		},
