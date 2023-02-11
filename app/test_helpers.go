@@ -81,7 +81,7 @@ func Setup(
 		// Initialize the chain
 		app.InitChain(
 			abci.RequestInitChain{
-				ChainId:         "testchain-1",
+				ChainId:         "testchain_9100" + "-1",
 				Validators:      []abci.ValidatorUpdate{},
 				ConsensusParams: DefaultConsensusParams,
 				AppStateBytes:   stateBytes,
