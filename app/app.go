@@ -125,6 +125,7 @@ import (
 
 	"github.com/McDaan/testchain/app/ante"
 	"github.com/McDaan/testchain/x/erc20"
+	hubupgrades "github.com/McDaan/testchain/upgrades"
 	erc20client "github.com/McDaan/testchain/x/erc20/client"
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
 	erc20types "github.com/McDaan/testchain/x/erc20/types"
