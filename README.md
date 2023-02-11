@@ -22,7 +22,7 @@ make install
 
 ## Community
 
-The following chat channels and forums are a great spot to ask questions about Arable:
+The following chat channels and forums are a great spot to ask questions about Testchain:
 
 - [Testchain Twitter](https://twitter.com/)
 - [Testchain Discord](https://discord.com/invite/)
