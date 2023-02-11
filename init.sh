@@ -1,5 +1,5 @@
 KEY="mykey"
-CHAINID="testchain-1"
+CHAINID="ttestchain_9100-1"
 MONIKER="localtestnet"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
@@ -41,12 +41,12 @@ testd collect-gentxs
 testd validate-genesis
 
 # Change parameter token denominations to aacre
-cat $HOME/.testd/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aacre"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
-cat $HOME/.testd/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aacre"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
-cat $HOME/.testd/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aacre"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
-cat $HOME/.testd/config/genesis.json | jq '.app_state["gov"]["voting_params"]["voting_period"]="20s"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
-cat $HOME/.testd/config/genesis.json | jq '.app_state["evm"]["params"]["evm_denom"]="aacre"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
-cat $HOME/.testd/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aacre"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
+cat $HOME/.testd/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="utest"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
+cat $HOME/.testd/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="utest"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
+cat $HOME/.testd/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="utest"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
+cat $HOME/.testd/config/genesis.json | jq '.app_state["gov"]["voting_params"]["voting_period"]="5000s"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
+cat $HOME/.testd/config/genesis.json | jq '.app_state["evm"]["params"]["evm_denom"]="utest"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
+cat $HOME/.testd/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="utest"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
 cat $HOME/.testd/config/genesis.json | jq '.app_state["mint"]["params"]["next_rewards_reduction_time"]="'$(($(date -u +%s) + 30))'"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
 cat $HOME/.testd/config/genesis.json | jq '.app_state["mint"]["params"]["minting_rewards_distribution_start_time"]="'$(($(date -u +%s) + 90))'"' > $HOME/.testd/config/tmp_genesis.json && mv $HOME/.testd/config/tmp_genesis.json $HOME/.testd/config/genesis.json
 
