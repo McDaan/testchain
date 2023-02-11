@@ -1,5 +1,9 @@
 package upgrades
 
+const (
+	Name = "upgrade-1"
+)
+
 import (
 	"fmt"
 	"time"
