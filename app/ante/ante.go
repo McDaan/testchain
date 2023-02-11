@@ -2,7 +2,7 @@ package ante
 
 import (
 	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	
@@ -13,11 +13,24 @@ import (
 	ethante "github.com/evmos/ethermint/app/ante"
 )
 
+type HandlerOptionss struct {
+	AccountKeeper   evmtypes.AccountKeeper
+	BankKeeper      evmtypes.BankKeeper
+	IBCKeeper       *ibckeeper.Keeper
+	FeeMarketKeeper evmtypes.FeeMarketKeeper
+	EvmKeeper       ethante.EVMKeeper
+	FeegrantKeeper  ante.FeegrantKeeper
+	SignModeHandler authsigning.SignModeHandler
+	SigGasConsumer  func(meter sdk.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
+	Cdc             codec.BinaryCodec
+	MaxTxGasWanted  uint64
+	WasmConfig      wasmtypes.WasmConfig
+}
 // NewAnteHandler returns an ante handler responsible for attempting to route an
 // Ethereum or SDK transaction to an internal ante handler for performing
 // transaction-level processing (e.g. fee payment, signature verification) before
 // being passed onto it's respective handler.
-func NewAnteHandler(options HandlerOptions) sdk.AnteHandler {
+func NewAnteHandler(options HandlerOptionss) sdk.AnteHandler {
 	return func(
 		ctx sdk.Context, tx sdk.Tx, sim bool,
 	) (newCtx sdk.Context, err error) {
