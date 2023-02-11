@@ -24,7 +24,7 @@ import (
 )
 
 // ChainIDPrefix defines the default chain ID prefix for Acre test chains
-var ChainIDPrefix = "testchain-"
+var ChainIDPrefix = "testchain_9100-"
 
 func init() {
 	ibcgotesting.ChainIDPrefix = ChainIDPrefix
