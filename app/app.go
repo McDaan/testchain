@@ -7,14 +7,21 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
+	
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/McDaan/testchain/x/mint"
@@ -35,9 +42,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authvestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
@@ -82,6 +91,12 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
+	ibcica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
+	ibcicacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
+	ibcicahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
+	ibcicahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
+	ibcicahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
@@ -146,7 +161,7 @@ var (
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
+			wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 			ibcclientclient.UpdateClientProposalHandler, ibcclientclient.UpgradeProposalHandler,
 			erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler, erc20client.ToggleTokenConversionProposalHandler,
 		),
@@ -154,6 +169,8 @@ var (
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		ibc.AppModuleBasic{},
+		ibcica.AppModuleBasic{},
+		ibctransfer.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
@@ -162,7 +179,10 @@ var (
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
 		erc20.AppModuleBasic{},
+		wasm.AppModuleBasic{},
 	)
+	WasmEnableSpecificProposals = ""
+	WasmProposalsEnabled        = "true"
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -188,6 +208,25 @@ var (
 	_ simapp.App              = (*TestApp)(nil)
 	_ ibctesting.TestingApp   = (*TestApp)(nil)
 )
+
+func GetWasmEnabledProposals() []wasmtypes.ProposalType {
+	if WasmEnableSpecificProposals == "" {
+		if WasmProposalsEnabled == "true" {
+			return wasmtypes.EnableAllProposals
+		}
+
+		return wasmtypes.DisableAllProposals
+	}
+
+	chunks := strings.Split(WasmEnableSpecificProposals, ",")
+
+	proposals, err := wasmtypes.ConvertToProposals(chunks)
+	if err != nil {
+		panic(err)
+	}
+
+	return proposals
+}
 
 // TestApp implements an extended ABCI application. It is an application
 // that may process transactions through Ethereum's EVM running atop of
@@ -222,12 +261,17 @@ type TestApp struct {
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	ibcICAHostKeeper ibcicahostkeeper.Keeper
+	ibcTransferKeeper ibctransferkeeper.Keeper
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
 
+	wasmKeeper wasmkeeper.Keeper
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
+	scopedIBCICAHostKeeper capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
+	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
 	// Ethermint keepers
 	EvmKeeper       *evmkeeper.Keeper
@@ -258,6 +302,8 @@ func NewTestChain(
 	invCheckPeriod uint,
 	encodingConfig simappparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
+	enabledProposals []wasmtypes.ProposalType,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *TestApp {
 	appCodec := encodingConfig.Marshaler
@@ -284,11 +330,11 @@ func NewTestChain(
 		evidencetypes.StoreKey, capabilitytypes.StoreKey,
 		feegrant.StoreKey, authzkeeper.StoreKey,
 		// ibc keys
-		ibchost.StoreKey, ibctransfertypes.StoreKey,
+		ibchost.StoreKey, ibcicahosttypes.StoreKey, ibctransfertypes.StoreKey,
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
-		// acrechain keys
-		erc20types.StoreKey,
+		// testchain keys & wasm
+		erc20types.StoreKey, wasmtypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -315,7 +361,11 @@ func NewTestChain(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
 
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	scopedIBCICAKeeper := app.CapabilityKeeper.ScopeToModule(ibcicahosttypes.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	
+	// Wasm
+	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
 	// their scoped modules in `NewApp` with `ScopeToModule`
@@ -371,6 +421,22 @@ func NewTestChain(
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), &stakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
+	)
+	
+	app.ibcICAHostKeeper = ibcicahostkeeper.NewKeeper(
+		app.cdc,
+		app.keys[ibcicahosttypes.StoreKey],
+		app.GetSubspace(ibcicahosttypes.SubModuleName),
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.accountKeeper,
+		app.scopedIBCICAHostKeeper,
+		app.MsgServiceRouter(),
+	)
+
+	var (
+		ibcICAAppModule     = ibcica.NewAppModule(nil, &app.ibcICAHostKeeper)
+		ibcICAHostIBCModule = ibcicahost.NewIBCModule(app.ibcICAHostKeeper)
 	)
 
 	// register the proposal types
@@ -460,8 +526,64 @@ func NewTestChain(
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
 	// we prefer to be more strict in what arguments the modules expect.
-	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
+	wasmDir := filepath.Join(homePath, "data")
+
+	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	if err != nil {
+		panic("error while reading wasm config: " + err.Error())
+	}
+
+	wasmCapabilities := "iterator,staking,stargate,cosmwasm_1_1"
+	app.wasmKeeper = wasmkeeper.NewKeeper(
+		app.cdc,
+		keys[wasmtypes.StoreKey],
+		app.GetSubspace(wasmtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		app.stakingKeeper,
+		app.distributionKeeper,
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.scopedWasmKeeper,
+		app.ibcTransferKeeper,
+		app.MsgServiceRouter(),
+		app.GRPCQueryRouter(),
+		wasmDir,
+		wasmConfig,
+		wasmCapabilities,
+		wasmOpts...,
+	)
+
+	ibcPortRouter := ibcporttypes.NewRouter()
+	ibcPortRouter.AddRoute(ibcicahosttypes.SubModuleName, ibcICAHostIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, ibcTransferIBCModule).
+		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
+	app.ibcKeeper.SetRouter(ibcPortRouter)
+
+	govRouter := govtypes.NewRouter()
+	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
+		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
+		AddRoute(distributiontypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.distributionKeeper)).
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
+
+	if len(enabledProposals) != 0 {
+		govRouter.AddRoute(wasmtypes.RouterKey, wasmkeeper.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
+	}
+
+	app.govKeeper = govkeeper.NewKeeper(
+		app.cdc,
+		app.keys[govtypes.StoreKey],
+		app.GetSubspace(govtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		&stakingKeeper,
+		govRouter,
+	)
+	
+	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+	
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(
@@ -487,12 +609,16 @@ func NewTestChain(
 
 		// ibc modules
 		ibc.NewAppModule(app.IBCKeeper),
+		ibcICAAppModule,
+		ibcTransferAppModule,
 		transferModule,
 		// Ethermint app modules
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
 		// testchain modules
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
+		// Wasm
+		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -513,6 +639,7 @@ func NewTestChain(
 		evidencetypes.ModuleName,
 		stakingtypes.ModuleName,
 		ibchost.ModuleName,
+		ibcicatypes.ModuleName,
 		// no-op modules
 		ibctransfertypes.ModuleName,
 		authtypes.ModuleName,
@@ -524,6 +651,7 @@ func NewTestChain(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		erc20types.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
@@ -535,6 +663,8 @@ func NewTestChain(
 		feemarkettypes.ModuleName,
 		// no-op modules
 		ibchost.ModuleName,
+		ibcicatypes.ModuleName,
+		ibcicatypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -549,6 +679,7 @@ func NewTestChain(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		erc20types.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -567,6 +698,8 @@ func NewTestChain(
 		govtypes.ModuleName,
 		minttypes.ModuleName,
 		ibchost.ModuleName,
+		ibchost.ModuleName,
+		ibcicatypes.ModuleName,
 		// Ethermint modules
 		// evm module denomination is used by the feesplit module, in AnteHandle
 		evmtypes.ModuleName,
@@ -583,6 +716,7 @@ func NewTestChain(
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
 		erc20types.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -623,9 +757,7 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	// initialize BaseApp
-	app.SetInitChainer(app.InitChainer)
-	app.SetBeginBlocker(app.BeginBlocker)
+	
 
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
 	options := ante.HandlerOptions{
@@ -639,6 +771,9 @@ func NewTestChain(
 		SigGasConsumer:  SigVerificationGasConsumer,
 		Cdc:             appCodec,
 		MaxTxGasWanted:  maxGasWanted,
+		TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
+		IBCKeeper:         app.ibcKeeper,
+		WasmConfig:        wasmConfig,
 	}
 
 	if err := options.Validate(); err != nil {
@@ -646,12 +781,58 @@ func NewTestChain(
 	}
 
 	app.SetAnteHandler(ante.NewAnteHandler(options))
+	// initialize BaseApp
+	app.SetInitChainer(app.InitChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
+	
 	app.SetEndBlocker(app.EndBlocker)
-	app.setupUpgradeHandlers()
+	
+	if manager := app.SnapshotManager(); manager != nil {
+		err = manager.RegisterExtensions(
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.wasmKeeper),
+		)
+		if err != nil {
+			panic("failed to register snapshot extension: " + err.Error())
+		}
+	}
+	
+	app.upgradeKeeper.SetUpgradeHandler(
+		"upgrade-1",
+		hubupgrades.Handler(
+			app.moduleManager,
+			app.configurator,
+			app.keys[paramstypes.ModuleName],
+			app.accountKeeper,
+			app.bankKeeper,
+			app.mintKeeper,
+			app.stakingKeeper,
+			app.wasmKeeper,
+		),
+	)
 
-	if loadLatest {
-		if err := app.LoadLatestVersion(); err != nil {
-			tmos.Exit(err.Error())
+	
+	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+	if upgradeInfo.Name == hubupgrades.Name && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				ibcicacontrollertypes.StoreKey,
+				ibcicahosttypes.StoreKey,
+				wasmtypes.ModuleName,
+			},
+		}
+		
+		if loadLatest {
+			if err := app.LoadLatestVersion(); err != nil {
+				tmos.Exit(err.Error())
+			}
+		}
+	
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+		if err := app.wasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			tmos.Exit(fmt.Sprintf("failed initialize pinned codes %s", err))
 		}
 	}
 
@@ -892,8 +1073,10 @@ func initParamsKeeper(
 	// ethermint subspaces
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
-	// acrechain subspaces
+	// testchain subspaces
 	paramsKeeper.Subspace(erc20types.ModuleName)
+	// wasm subspaces
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	return paramsKeeper
 }
 
