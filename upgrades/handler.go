@@ -1,9 +1,5 @@
 package upgrades
 
-const (
-	Name = "upgrade-1"
-)
-
 import (
 	"fmt"
 	"time"
@@ -29,6 +25,10 @@ import (
 	ibcicacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	ibcicahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+)
+
+const (
+	Name = "upgrade-1"
 )
 
 func Handler(
