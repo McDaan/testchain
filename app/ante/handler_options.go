@@ -13,6 +13,9 @@ import (
 
 	ethante "github.com/evmos/ethermint/app/ante"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
+	
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmTypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
 // HandlerOptions defines the list of module keepers required to run the Acrechain
@@ -28,6 +31,8 @@ type HandlerOptions struct {
 	SigGasConsumer  func(meter sdk.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
 	Cdc             codec.BinaryCodec
 	MaxTxGasWanted  uint64
+	WasmConfig        *wasmTypes.WasmConfig
+	TXCounterStoreKey sdk.StoreKey
 }
 
 // Validate checks if the keepers are defined
@@ -40,6 +45,9 @@ func (options HandlerOptions) Validate() error {
 	}
 	if options.SignModeHandler == nil {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
+	}
+	if options.WasmConfig == nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "wasm config is required for ante builder")
 	}
 	if options.FeeMarketKeeper == nil {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "fee market keeper is required for AnteHandler")
@@ -72,6 +80,8 @@ func newCosmosAnteHandler(options HandlerOptions) sdk.AnteHandler {
 	return sdk.ChainAnteDecorators(
 		ethante.RejectMessagesDecorator{}, // reject MsgEthereumTxs
 		ante.NewSetUpContextDecorator(),
+		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
+		wasmkeeper.NewCountTXDecorator(options.TXCounterStoreKey),
 		ante.NewRejectExtensionOptionsDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewMempoolFeeDecorator(),
@@ -97,6 +107,8 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) sdk.AnteHandler {
 	return sdk.ChainAnteDecorators(
 		ethante.RejectMessagesDecorator{}, // reject MsgEthereumTxs
 		ante.NewSetUpContextDecorator(),
+		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
+		wasmkeeper.NewCountTXDecorator(options.TXCounterStoreKey),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ethante.NewMinGasPriceDecorator(options.FeeMarketKeeper, options.EvmKeeper),
