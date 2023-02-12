@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -293,7 +294,7 @@ func NewTestChain(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
-	encodingConfig simappparams.EncodingConfig,
+	// encodingConfig simappparams.EncodingConfig,
 	encodingConfig wasmappparams.EncodingConfig,
 	enabledProposals []wasm.ProposalType,
 	appOpts servertypes.AppOptions,
