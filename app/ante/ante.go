@@ -15,7 +15,7 @@ type HandlerOptions struct {
 	authante.HandlerOptions
 
 	IBCKeeper         *keeper.Keeper
-	WasmConfig        wasmTypes.WasmConfig
+	WasmConfig        *wasmTypes.WasmConfig
 	TXCounterStoreKey sdk.StoreKey
 }
 
