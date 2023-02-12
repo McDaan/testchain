@@ -627,6 +627,7 @@ func NewTestChain(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		erc20types.ModuleName,
+		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 	)
 
@@ -653,6 +654,7 @@ func NewTestChain(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		erc20types.ModuleName,
+		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 	)
 
@@ -689,6 +691,7 @@ func NewTestChain(
 		crisistypes.ModuleName,
 		erc20types.ModuleName,
 		// wasm after ibc transfer
+		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 	)
 
