@@ -526,7 +526,7 @@ func NewTestChain(
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferStack)
-	AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
+	ibcRouter.AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
 	app.IBCKeeper.SetRouter(ibcRouter)
 	
 	// For wasmd we use the demo controller from https://github.com/cosmos/interchain-accounts but see notes below
