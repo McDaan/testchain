@@ -26,5 +26,5 @@ The following chat channels and forums are a great spot to ask questions about T
 
 - [Testchain Twitter](https://twitter.com/)
 - [Testchain Discord](https://discord.com/invite/)
-- [Testchain Telegram](https://t.me/)
+- [Testchain Telegram](https://t.me)
 - [Testchain Medium](https://medium.com/@)
