@@ -7,19 +7,26 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
+	
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/ArableProtocol/acrechain/x/mint"
-	mintkeeper "github.com/ArableProtocol/acrechain/x/mint/keeper"
-	minttypes "github.com/ArableProtocol/acrechain/x/mint/types"
+	"github.com/McDaan/testchain/x/mint"
+	mintkeeper "github.com/McDaan/testchain/x/mint/keeper"
+	minttypes "github.com/McDaan/testchain/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -35,9 +42,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authvestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
@@ -82,6 +91,12 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
+	ibcica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
+	ibcicacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
+	ibcicahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
+	ibcicahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
+	ibcicahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
@@ -106,13 +121,14 @@ import (
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/ArableProtocol/acrechain/client/docs/statik"
+	_ "github.com/McDaan/testchain/client/docs/statik"
 
-	"github.com/ArableProtocol/acrechain/app/ante"
-	"github.com/ArableProtocol/acrechain/x/erc20"
-	erc20client "github.com/ArableProtocol/acrechain/x/erc20/client"
-	erc20keeper "github.com/ArableProtocol/acrechain/x/erc20/keeper"
-	erc20types "github.com/ArableProtocol/acrechain/x/erc20/types"
+	"github.com/McDaan/testchain/app/ante"
+	"github.com/McDaan/testchain/x/erc20"
+	hubupgrades "github.com/McDaan/testchain/upgrades"
+	erc20client "github.com/McDaan/testchain/x/erc20/client"
+	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
+	erc20types "github.com/McDaan/testchain/x/erc20/types"
 )
 
 func init() {
@@ -121,14 +137,14 @@ func init() {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, ".acred")
+	DefaultNodeHome = filepath.Join(userHomeDir, ".testd")
 
 	// manually update the power reduction by replacing micro (u) -> atto (a) acre
 	sdk.DefaultPowerReduction = ethermint.PowerReduction
 }
 
 // Name defines the application binary name
-const Name = "acred"
+const Name = "testd"
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -146,7 +162,7 @@ var (
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
+			wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 			ibcclientclient.UpdateClientProposalHandler, ibcclientclient.UpgradeProposalHandler,
 			erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler, erc20client.ToggleTokenConversionProposalHandler,
 		),
@@ -154,6 +170,8 @@ var (
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		ibc.AppModuleBasic{},
+		ibcica.AppModuleBasic{},
+		ibctransfer.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
@@ -162,7 +180,10 @@ var (
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
 		erc20.AppModuleBasic{},
+		wasm.AppModuleBasic{},
 	)
+	WasmEnableSpecificProposals = ""
+	WasmProposalsEnabled        = "true"
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -184,15 +205,34 @@ var (
 )
 
 var (
-	_ servertypes.Application = (*AcreApp)(nil)
-	_ simapp.App              = (*AcreApp)(nil)
-	_ ibctesting.TestingApp   = (*AcreApp)(nil)
+	_ servertypes.Application = (*TestApp)(nil)
+	_ simapp.App              = (*TestApp)(nil)
+	_ ibctesting.TestingApp   = (*TestApp)(nil)
 )
 
-// AcreApp implements an extended ABCI application. It is an application
+func GetWasmEnabledProposals() []wasmtypes.ProposalType {
+	if WasmEnableSpecificProposals == "" {
+		if WasmProposalsEnabled == "true" {
+			return wasmtypes.EnableAllProposals
+		}
+
+		return wasmtypes.DisableAllProposals
+	}
+
+	chunks := strings.Split(WasmEnableSpecificProposals, ",")
+
+	proposals, err := wasmtypes.ConvertToProposals(chunks)
+	if err != nil {
+		panic(err)
+	}
+
+	return proposals
+}
+
+// TestApp implements an extended ABCI application. It is an application
 // that may process transactions through Ethereum's EVM running atop of
 // Tendermint consensus.
-type AcreApp struct {
+type TestApp struct {
 	*baseapp.BaseApp
 
 	// encoding
@@ -222,12 +262,17 @@ type AcreApp struct {
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	ibcICAHostKeeper ibcicahostkeeper.Keeper
+	ibcTransferKeeper ibctransferkeeper.Keeper
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
 
+	wasmKeeper wasmkeeper.Keeper
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
+	scopedIBCICAHostKeeper capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
+	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
 	// Ethermint keepers
 	EvmKeeper       *evmkeeper.Keeper
@@ -247,8 +292,8 @@ type AcreApp struct {
 	tpsCounter *tpsCounter
 }
 
-// NewAcreChain returns a reference to a new initialized Ethermint application.
-func NewAcreChain(
+// NewTestChain returns a reference to a new initialized Ethermint application.
+func NewTestChain(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
@@ -258,8 +303,10 @@ func NewAcreChain(
 	invCheckPeriod uint,
 	encodingConfig simappparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
+	enabledProposals []wasmtypes.ProposalType,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) *AcreApp {
+) *TestApp {
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -284,18 +331,18 @@ func NewAcreChain(
 		evidencetypes.StoreKey, capabilitytypes.StoreKey,
 		feegrant.StoreKey, authzkeeper.StoreKey,
 		// ibc keys
-		ibchost.StoreKey, ibctransfertypes.StoreKey,
+		ibchost.StoreKey, ibcicahosttypes.StoreKey, ibctransfertypes.StoreKey,
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
-		// acrechain keys
-		erc20types.StoreKey,
+		// testchain keys & wasm
+		erc20types.StoreKey, wasmtypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey, feemarkettypes.TransientKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
-	app := &AcreApp{
+	app := &TestApp{
 		BaseApp:           bApp,
 		cdc:               cdc,
 		appCodec:          appCodec,
@@ -315,7 +362,11 @@ func NewAcreChain(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
 
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	scopedIBCICAKeeper := app.CapabilityKeeper.ScopeToModule(ibcicahosttypes.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	
+	// Wasm
+	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
 	// their scoped modules in `NewApp` with `ScopeToModule`
@@ -371,6 +422,22 @@ func NewAcreChain(
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), &stakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
+	)
+	
+	app.ibcICAHostKeeper = ibcicahostkeeper.NewKeeper(
+		app.cdc,
+		app.keys[ibcicahosttypes.StoreKey],
+		app.GetSubspace(ibcicahosttypes.SubModuleName),
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.accountKeeper,
+		app.scopedIBCICAHostKeeper,
+		app.MsgServiceRouter(),
+	)
+
+	var (
+		ibcICAAppModule     = ibcica.NewAppModule(nil, &app.ibcICAHostKeeper)
+		ibcICAHostIBCModule = ibcicahost.NewIBCModule(app.ibcICAHostKeeper)
 	)
 
 	// register the proposal types
@@ -460,8 +527,64 @@ func NewAcreChain(
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
 	// we prefer to be more strict in what arguments the modules expect.
-	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
+	wasmDir := filepath.Join(homePath, "data")
+
+	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	if err != nil {
+		panic("error while reading wasm config: " + err.Error())
+	}
+
+	wasmCapabilities := "iterator,staking,stargate,cosmwasm_1_1"
+	app.wasmKeeper = wasmkeeper.NewKeeper(
+		app.cdc,
+		keys[wasmtypes.StoreKey],
+		app.GetSubspace(wasmtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		app.stakingKeeper,
+		app.distributionKeeper,
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.scopedWasmKeeper,
+		app.ibcTransferKeeper,
+		app.MsgServiceRouter(),
+		app.GRPCQueryRouter(),
+		wasmDir,
+		wasmConfig,
+		wasmCapabilities,
+		wasmOpts...,
+	)
+
+	ibcPortRouter := ibcporttypes.NewRouter()
+	ibcPortRouter.AddRoute(ibcicahosttypes.SubModuleName, ibcICAHostIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, ibcTransferIBCModule).
+		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
+	app.ibcKeeper.SetRouter(ibcPortRouter)
+
+	govRouter := govtypes.NewRouter()
+	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
+		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
+		AddRoute(distributiontypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.distributionKeeper)).
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
+
+	if len(enabledProposals) != 0 {
+		govRouter.AddRoute(wasmtypes.RouterKey, wasmkeeper.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
+	}
+
+	app.govKeeper = govkeeper.NewKeeper(
+		app.cdc,
+		app.keys[govtypes.StoreKey],
+		app.GetSubspace(govtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		&stakingKeeper,
+		govRouter,
+	)
+	
+	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+	
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(
@@ -487,12 +610,16 @@ func NewAcreChain(
 
 		// ibc modules
 		ibc.NewAppModule(app.IBCKeeper),
+		ibcICAAppModule,
+		ibcTransferAppModule,
 		transferModule,
 		// Ethermint app modules
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
-		// acrechain modules
+		// testchain modules
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
+		// Wasm
+		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -513,6 +640,7 @@ func NewAcreChain(
 		evidencetypes.ModuleName,
 		stakingtypes.ModuleName,
 		ibchost.ModuleName,
+		ibcicatypes.ModuleName,
 		// no-op modules
 		ibctransfertypes.ModuleName,
 		authtypes.ModuleName,
@@ -524,6 +652,7 @@ func NewAcreChain(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		erc20types.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
@@ -535,6 +664,8 @@ func NewAcreChain(
 		feemarkettypes.ModuleName,
 		// no-op modules
 		ibchost.ModuleName,
+		ibcicatypes.ModuleName,
+		ibcicatypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -549,6 +680,7 @@ func NewAcreChain(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		erc20types.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -567,6 +699,8 @@ func NewAcreChain(
 		govtypes.ModuleName,
 		minttypes.ModuleName,
 		ibchost.ModuleName,
+		ibchost.ModuleName,
+		ibcicatypes.ModuleName,
 		// Ethermint modules
 		// evm module denomination is used by the feesplit module, in AnteHandle
 		evmtypes.ModuleName,
@@ -583,6 +717,7 @@ func NewAcreChain(
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
 		erc20types.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -623,9 +758,7 @@ func NewAcreChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	// initialize BaseApp
-	app.SetInitChainer(app.InitChainer)
-	app.SetBeginBlocker(app.BeginBlocker)
+	
 
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
 	options := ante.HandlerOptions{
@@ -639,6 +772,9 @@ func NewAcreChain(
 		SigGasConsumer:  SigVerificationGasConsumer,
 		Cdc:             appCodec,
 		MaxTxGasWanted:  maxGasWanted,
+		TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
+		IBCKeeper:         app.ibcKeeper,
+		WasmConfig:        wasmConfig,
 	}
 
 	if err := options.Validate(); err != nil {
@@ -646,12 +782,58 @@ func NewAcreChain(
 	}
 
 	app.SetAnteHandler(ante.NewAnteHandler(options))
+	// initialize BaseApp
+	app.SetInitChainer(app.InitChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
+	
 	app.SetEndBlocker(app.EndBlocker)
-	app.setupUpgradeHandlers()
+	
+	if manager := app.SnapshotManager(); manager != nil {
+		err = manager.RegisterExtensions(
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.wasmKeeper),
+		)
+		if err != nil {
+			panic("failed to register snapshot extension: " + err.Error())
+		}
+	}
+	
+	app.upgradeKeeper.SetUpgradeHandler(
+		"upgrade-1",
+		hubupgrades.Handler(
+			app.moduleManager,
+			app.configurator,
+			app.keys[paramstypes.ModuleName],
+			app.accountKeeper,
+			app.bankKeeper,
+			app.mintKeeper,
+			app.stakingKeeper,
+			app.wasmKeeper,
+		),
+	)
 
-	if loadLatest {
-		if err := app.LoadLatestVersion(); err != nil {
-			tmos.Exit(err.Error())
+	
+	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+	if upgradeInfo.Name == hubupgrades.Name && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				ibcicacontrollertypes.StoreKey,
+				ibcicahosttypes.StoreKey,
+				wasmtypes.ModuleName,
+			},
+		}
+		
+		if loadLatest {
+			if err := app.LoadLatestVersion(); err != nil {
+				tmos.Exit(err.Error())
+			}
+		}
+	
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+		if err := app.wasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			tmos.Exit(fmt.Sprintf("failed initialize pinned codes %s", err))
 		}
 	}
 
@@ -670,23 +852,23 @@ func NewAcreChain(
 }
 
 // Name returns the name of the App
-func (app *AcreApp) Name() string { return app.BaseApp.Name() }
+func (app *TestApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker runs the Tendermint ABCI BeginBlock logic. It executes state changes at the beginning
 // of the new block for every registered module. If there is a registered fork at the current height,
 // BeginBlocker will schedule the upgrade plan and perform the state migration (if any).
-func (app *AcreApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *TestApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	// Perform any scheduled forks before executing the modules logic
 	return app.mm.BeginBlock(ctx, req)
 }
 
 // EndBlocker updates every end block
-func (app *AcreApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *TestApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
 // We are intentionally decomposing the DeliverTx method so as to calculate the transactions per second.
-func (app *AcreApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+func (app *TestApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	defer func() {
 		// TODO: Record the count along with the code and or reason so as to display
 		// in the transactions per second live dashboards.
@@ -700,7 +882,7 @@ func (app *AcreApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 }
 
 // InitChainer updates at chain initialization
-func (app *AcreApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *TestApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState simapp.GenesisState
 	if err := json.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
@@ -712,12 +894,12 @@ func (app *AcreApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 }
 
 // LoadHeight loads state at a particular height
-func (app *AcreApp) LoadHeight(height int64) error {
+func (app *TestApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *AcreApp) ModuleAccountAddrs() map[string]bool {
+func (app *TestApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
@@ -728,7 +910,7 @@ func (app *AcreApp) ModuleAccountAddrs() map[string]bool {
 
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.
-func (app *AcreApp) BlockedAddrs() map[string]bool {
+func (app *TestApp) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		blockedAddrs[authtypes.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
@@ -737,64 +919,64 @@ func (app *AcreApp) BlockedAddrs() map[string]bool {
 	return blockedAddrs
 }
 
-// LegacyAmino returns AcreApp's amino codec.
+// LegacyAmino returns TestApp's amino codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *AcreApp) LegacyAmino() *codec.LegacyAmino {
+func (app *TestApp) LegacyAmino() *codec.LegacyAmino {
 	return app.cdc
 }
 
-// AppCodec returns AcreApp's app codec.
+// AppCodec returns TestApp's app codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *AcreApp) AppCodec() codec.Codec {
+func (app *TestApp) AppCodec() codec.Codec {
 	return app.appCodec
 }
 
-// InterfaceRegistry returns AcreApp's InterfaceRegistry
-func (app *AcreApp) InterfaceRegistry() types.InterfaceRegistry {
+// InterfaceRegistry returns TestApp's InterfaceRegistry
+func (app *TestApp) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *AcreApp) GetKey(storeKey string) *sdk.KVStoreKey {
+func (app *TestApp) GetKey(storeKey string) *sdk.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *AcreApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
+func (app *TestApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *AcreApp) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
+func (app *TestApp) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
 // GetSubspace returns a param subspace for a given module name.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *AcreApp) GetSubspace(moduleName string) paramstypes.Subspace {
+func (app *TestApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *AcreApp) SimulationManager() *module.SimulationManager {
+func (app *TestApp) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (app *AcreApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
+func (app *TestApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
 
@@ -815,38 +997,38 @@ func (app *AcreApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICo
 	}
 }
 
-func (app *AcreApp) RegisterTxService(clientCtx client.Context) {
+func (app *TestApp) RegisterTxService(clientCtx client.Context) {
 	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
 }
 
-func (app *AcreApp) RegisterTendermintService(clientCtx client.Context) {
+func (app *TestApp) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
 }
 
 // IBC Go TestingApp functions
 
 // GetBaseApp implements the TestingApp interface.
-func (app *AcreApp) GetBaseApp() *baseapp.BaseApp {
+func (app *TestApp) GetBaseApp() *baseapp.BaseApp {
 	return app.BaseApp
 }
 
 // GetStakingKeeper implements the TestingApp interface.
-func (app *AcreApp) GetStakingKeeper() stakingkeeper.Keeper {
+func (app *TestApp) GetStakingKeeper() stakingkeeper.Keeper {
 	return app.StakingKeeper
 }
 
 // GetIBCKeeper implements the TestingApp interface.
-func (app *AcreApp) GetIBCKeeper() *ibckeeper.Keeper {
+func (app *TestApp) GetIBCKeeper() *ibckeeper.Keeper {
 	return app.IBCKeeper
 }
 
 // GetScopedIBCKeeper implements the TestingApp interface.
-func (app *AcreApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+func (app *TestApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 	return app.ScopedIBCKeeper
 }
 
 // GetTxConfig implements the TestingApp interface.
-func (app *AcreApp) GetTxConfig() client.TxConfig {
+func (app *TestApp) GetTxConfig() client.TxConfig {
 	cfg := encoding.MakeConfig(ModuleBasics)
 	return cfg.TxConfig
 }
@@ -892,10 +1074,12 @@ func initParamsKeeper(
 	// ethermint subspaces
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
-	// acrechain subspaces
+	// testchain subspaces
 	paramsKeeper.Subspace(erc20types.ModuleName)
+	// wasm subspaces
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	return paramsKeeper
 }
 
-func (app *AcreApp) setupUpgradeHandlers() {
+func (app *TestApp) setupUpgradeHandlers() {
 }
