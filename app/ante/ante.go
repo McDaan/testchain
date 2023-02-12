@@ -6,7 +6,18 @@ import (
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 
 	ethante "github.com/evmos/ethermint/app/ante"
+	
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmTypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
+
+type HandlerOptions struct {
+	authante.HandlerOptions
+
+	IBCKeeper         *keeper.Keeper
+	WasmConfig        *wasmTypes.WasmConfig
+	TXCounterStoreKey sdk.StoreKey
+}
 
 // NewAnteHandler returns an ante handler responsible for attempting to route an
 // Ethereum or SDK transaction to an internal ante handler for performing
