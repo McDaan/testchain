@@ -17,9 +17,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/McDaan/testchain/x/mint"
-	mintkeeper "github.com/McDaan/testchain/x/mint/keeper"
-	minttypes "github.com/McDaan/testchain/x/mint/types"
+	"github.com/ArableProtocol/acrechain/x/mint"
+	mintkeeper "github.com/ArableProtocol/acrechain/x/mint/keeper"
+	minttypes "github.com/ArableProtocol/acrechain/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -106,13 +106,13 @@ import (
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/McDaan/testchain/client/docs/statik"
+	_ "github.com/ArableProtocol/acrechain/client/docs/statik"
 
-	"github.com/McDaan/testchain/app/ante"
-	"github.com/McDaan/testchain/x/erc20"
-	erc20client "github.com/McDaan/testchain/x/erc20/client"
-	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
-	erc20types "github.com/McDaan/testchain/x/erc20/types"
+	"github.com/ArableProtocol/acrechain/app/ante"
+	"github.com/ArableProtocol/acrechain/x/erc20"
+	erc20client "github.com/ArableProtocol/acrechain/x/erc20/client"
+	erc20keeper "github.com/ArableProtocol/acrechain/x/erc20/keeper"
+	erc20types "github.com/ArableProtocol/acrechain/x/erc20/types"
 )
 
 func init() {
@@ -121,14 +121,14 @@ func init() {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, ".testd")
+	DefaultNodeHome = filepath.Join(userHomeDir, ".acred")
 
 	// manually update the power reduction by replacing micro (u) -> atto (a) acre
 	sdk.DefaultPowerReduction = ethermint.PowerReduction
 }
 
 // Name defines the application binary name
-const Name = "testd"
+const Name = "acred"
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -184,15 +184,15 @@ var (
 )
 
 var (
-	_ servertypes.Application = (*TestApp)(nil)
-	_ simapp.App              = (*TestApp)(nil)
-	_ ibctesting.TestingApp   = (*TestApp)(nil)
+	_ servertypes.Application = (*AcreApp)(nil)
+	_ simapp.App              = (*AcreApp)(nil)
+	_ ibctesting.TestingApp   = (*AcreApp)(nil)
 )
 
-// TestApp implements an extended ABCI application. It is an application
+// AcreApp implements an extended ABCI application. It is an application
 // that may process transactions through Ethereum's EVM running atop of
 // Tendermint consensus.
-type TestApp struct {
+type AcreApp struct {
 	*baseapp.BaseApp
 
 	// encoding
@@ -247,8 +247,8 @@ type TestApp struct {
 	tpsCounter *tpsCounter
 }
 
-// NewTestChain returns a reference to a new initialized Ethermint application.
-func NewTestChain(
+// NewAcreChain returns a reference to a new initialized Ethermint application.
+func NewAcreChain(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
@@ -259,7 +259,7 @@ func NewTestChain(
 	encodingConfig simappparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) *TestApp {
+) *AcreApp {
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -295,7 +295,7 @@ func NewTestChain(
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey, feemarkettypes.TransientKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
-	app := &TestApp{
+	app := &AcreApp{
 		BaseApp:           bApp,
 		cdc:               cdc,
 		appCodec:          appCodec,
@@ -491,7 +491,7 @@ func NewTestChain(
 		// Ethermint app modules
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
-		// testchain modules
+		// acrechain modules
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
 	)
 
@@ -670,23 +670,23 @@ func NewTestChain(
 }
 
 // Name returns the name of the App
-func (app *TestApp) Name() string { return app.BaseApp.Name() }
+func (app *AcreApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker runs the Tendermint ABCI BeginBlock logic. It executes state changes at the beginning
 // of the new block for every registered module. If there is a registered fork at the current height,
 // BeginBlocker will schedule the upgrade plan and perform the state migration (if any).
-func (app *TestApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *AcreApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	// Perform any scheduled forks before executing the modules logic
 	return app.mm.BeginBlock(ctx, req)
 }
 
 // EndBlocker updates every end block
-func (app *TestApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *AcreApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
 // We are intentionally decomposing the DeliverTx method so as to calculate the transactions per second.
-func (app *TestApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+func (app *AcreApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	defer func() {
 		// TODO: Record the count along with the code and or reason so as to display
 		// in the transactions per second live dashboards.
@@ -700,7 +700,7 @@ func (app *TestApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 }
 
 // InitChainer updates at chain initialization
-func (app *TestApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *AcreApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState simapp.GenesisState
 	if err := json.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
@@ -712,12 +712,12 @@ func (app *TestApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 }
 
 // LoadHeight loads state at a particular height
-func (app *TestApp) LoadHeight(height int64) error {
+func (app *AcreApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *TestApp) ModuleAccountAddrs() map[string]bool {
+func (app *AcreApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
@@ -728,7 +728,7 @@ func (app *TestApp) ModuleAccountAddrs() map[string]bool {
 
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.
-func (app *TestApp) BlockedAddrs() map[string]bool {
+func (app *AcreApp) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		blockedAddrs[authtypes.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
@@ -737,64 +737,64 @@ func (app *TestApp) BlockedAddrs() map[string]bool {
 	return blockedAddrs
 }
 
-// LegacyAmino returns TestApp's amino codec.
+// LegacyAmino returns AcreApp's amino codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *TestApp) LegacyAmino() *codec.LegacyAmino {
+func (app *AcreApp) LegacyAmino() *codec.LegacyAmino {
 	return app.cdc
 }
 
-// AppCodec returns TestApp's app codec.
+// AppCodec returns AcreApp's app codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *TestApp) AppCodec() codec.Codec {
+func (app *AcreApp) AppCodec() codec.Codec {
 	return app.appCodec
 }
 
-// InterfaceRegistry returns TestApp's InterfaceRegistry
-func (app *TestApp) InterfaceRegistry() types.InterfaceRegistry {
+// InterfaceRegistry returns AcreApp's InterfaceRegistry
+func (app *AcreApp) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *TestApp) GetKey(storeKey string) *sdk.KVStoreKey {
+func (app *AcreApp) GetKey(storeKey string) *sdk.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *TestApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
+func (app *AcreApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *TestApp) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
+func (app *AcreApp) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
 // GetSubspace returns a param subspace for a given module name.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *TestApp) GetSubspace(moduleName string) paramstypes.Subspace {
+func (app *AcreApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *TestApp) SimulationManager() *module.SimulationManager {
+func (app *AcreApp) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (app *TestApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
+func (app *AcreApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
 
@@ -815,38 +815,38 @@ func (app *TestApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICo
 	}
 }
 
-func (app *TestApp) RegisterTxService(clientCtx client.Context) {
+func (app *AcreApp) RegisterTxService(clientCtx client.Context) {
 	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
 }
 
-func (app *TestApp) RegisterTendermintService(clientCtx client.Context) {
+func (app *AcreApp) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
 }
 
 // IBC Go TestingApp functions
 
 // GetBaseApp implements the TestingApp interface.
-func (app *TestApp) GetBaseApp() *baseapp.BaseApp {
+func (app *AcreApp) GetBaseApp() *baseapp.BaseApp {
 	return app.BaseApp
 }
 
 // GetStakingKeeper implements the TestingApp interface.
-func (app *TestApp) GetStakingKeeper() stakingkeeper.Keeper {
+func (app *AcreApp) GetStakingKeeper() stakingkeeper.Keeper {
 	return app.StakingKeeper
 }
 
 // GetIBCKeeper implements the TestingApp interface.
-func (app *TestApp) GetIBCKeeper() *ibckeeper.Keeper {
+func (app *AcreApp) GetIBCKeeper() *ibckeeper.Keeper {
 	return app.IBCKeeper
 }
 
 // GetScopedIBCKeeper implements the TestingApp interface.
-func (app *TestApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+func (app *AcreApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 	return app.ScopedIBCKeeper
 }
 
 // GetTxConfig implements the TestingApp interface.
-func (app *TestApp) GetTxConfig() client.TxConfig {
+func (app *AcreApp) GetTxConfig() client.TxConfig {
 	cfg := encoding.MakeConfig(ModuleBasics)
 	return cfg.TxConfig
 }
@@ -897,5 +897,5 @@ func initParamsKeeper(
 	return paramsKeeper
 }
 
-func (app *TestApp) setupUpgradeHandlers() {
+func (app *AcreApp) setupUpgradeHandlers() {
 }
