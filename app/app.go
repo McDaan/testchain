@@ -774,7 +774,7 @@ func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64
 		IBCKeeper:              app.IBCKeeper,
 		FeeMarketKeeper:        app.FeeMarketKeeper,
 		SignModeHandler:        txConfig.SignModeHandler(),
-		SigGasConsumer:         authante.SigVerificationGasConsumer,
+		SigGasConsumer:         SigVerificationGasConsumer,
 		MaxTxGasWanted:         maxGasWanted,
 		WasmConfig:       	&wasmConfig,
 		TXCounterStoreKey: 	keys[wasm.StoreKey],
