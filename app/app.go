@@ -110,7 +110,7 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/McDaan/testchain/client/docs/statik"
 
-	"github.com/McDaan/testchain/app/ante"
+	tante "github.com/McDaan/testchain/app/ante"
 	ante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/McDaan/testchain/x/erc20"
 	erc20client "github.com/McDaan/testchain/x/erc20/client"
