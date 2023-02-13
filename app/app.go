@@ -717,7 +717,7 @@ func NewTestChain(
 			BankKeeper:      app.BankKeeper,
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-			SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,
+		SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
 			TXCounterStoreKey: keys[wasm.StoreKey],
