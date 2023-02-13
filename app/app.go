@@ -783,8 +783,8 @@ func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64
 }
 
 func (app *TestApp) setPostHandler() {
-	postHandler, err := postHandler.NewPostHandler(
-		postHandler.HandlerOptions{},
+	postHandler, err := posthandler.NewPostHandler(
+		posthandler.HandlerOptions{},
 	)
 	if err != nil {
 		panic(err)
