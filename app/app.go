@@ -712,32 +712,29 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 	
-	anteHandler, err := NewAnteHandler(
-		 HandlerOptions{
-			HandlerOptions: NewHandlerOptions{
-				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.BankKeeper,
-				FeegrantKeeper:  app.FeeGrantKeeper,
-				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,
-			},
+	options1 := authante.HandlerOptions{
+			AccountKeeper:   app.AccountKeeper,
+			BankKeeper:      app.BankKeeper,
+			FeegrantKeeper:  app.FeeGrantKeeper,
+			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+			SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
 			TXCounterStoreKey: keys[wasm.StoreKey],
-		},
-	)
+	}
+	
 	if err != nil {
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	}
-
+	
+        app.SetAnteHandler(authante.NewAnteHandler(options1))
 
 	// initialize BaseApp
-	app.SetAnteHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
-	options := authante.HandlerOptions{
+	options2 := authante.HandlerOptions{
 		AccountKeeper:   app.AccountKeeper,
 		BankKeeper:      app.BankKeeper,
 		EvmKeeper:       app.EvmKeeper,
@@ -754,7 +751,7 @@ func NewTestChain(
 		panic(err)
 	}
 
-	app.SetAnteHandler(authante.NewAnteHandler(options))
+	app.SetAnteHandler(authante.NewAnteHandler(options2))
 	app.SetEndBlocker(app.EndBlocker)
 	app.setupUpgradeHandlers()
 	
