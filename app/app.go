@@ -111,7 +111,7 @@ import (
 	_ "github.com/McDaan/testchain/client/docs/statik"
 
 	//ante "github.com/McDaan/testchain/app/ante"
-	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authante "github.com/McDaan/testchain/app/ante"
 	"github.com/McDaan/testchain/x/erc20"
 	erc20client "github.com/McDaan/testchain/x/erc20/client"
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
