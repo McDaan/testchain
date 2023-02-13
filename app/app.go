@@ -760,6 +760,12 @@ func NewTestChain(
 func (app *TestApp) Name() string { return app.BaseApp.Name() }
 
 func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
+	wasmDir := filepath.Join(homePath, "wasm")
+	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	if err != nil {
+		panic(fmt.Sprintf("error while reading wasm config: %s", err))
+	}
+	
 	options := authante.HandlerOptions{
 		Cdc:                    app.appCodec,
 		AccountKeeper:          app.AccountKeeper,
