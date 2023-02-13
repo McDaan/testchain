@@ -111,6 +111,7 @@ import (
 	_ "github.com/McDaan/testchain/client/docs/statik"
 
 	//ante "github.com/McDaan/testchain/app/ante"
+	ethante "github.com/evmos/evmos/v11/app/ante/evm"
 	authante "github.com/McDaan/testchain/app/ante"
 	testtypes "github.com/McDaan/testchain/types"
 	"github.com/McDaan/testchain/x/erc20"
