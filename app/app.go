@@ -712,7 +712,7 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 	
-	anteHandler, err := ante.newAnteHandler(
+	anteHandler, err := ante.NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
