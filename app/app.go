@@ -712,16 +712,20 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 	
-	options1 := authante.HandlerOptions{
-			AccountKeeper:   app.AccountKeeper,
-			BankKeeper:      app.BankKeeper,
-			FeegrantKeeper:  app.FeeGrantKeeper,
-			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-		SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,},
+	options1, err := NewAnteHandler(
+		HandlerOptions{
+			HandlerOptions: authante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,
+			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
 			TXCounterStoreKey: keys[wasm.StoreKey],
-	}
+		}
+	)
 	
 	if err != nil {
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
