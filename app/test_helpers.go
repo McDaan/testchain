@@ -97,7 +97,7 @@ func Setup(
 }
 
 // SetupTestingApp initializes the IBC-go testing application.
-func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage, op ...wasm.Option) {
+func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage, op wasm.Option) {
 	db := dbm.NewMemDB()
 	cfg := encoding.MakeConfig(ModuleBasics)
 	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cfg, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, op)
