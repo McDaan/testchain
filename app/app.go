@@ -706,8 +706,6 @@ func NewTestChain(
 	)
 
 	app.sm.RegisterStoreDecoders()
-
-	wasmDir := filepath.Join(homePath, "data")
 	
 	// initialize stores
 	app.MountKVStores(keys)
