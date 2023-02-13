@@ -17,6 +17,7 @@ import (
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
 	"github.com/McDaan/testchain/cmd/config"
+	"github.com/CosmWasm/wasmd/app/params"
 )
 
 func init() {
