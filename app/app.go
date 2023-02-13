@@ -110,8 +110,8 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/McDaan/testchain/client/docs/statik"
 
-	tante "github.com/McDaan/testchain/app/ante"
-	ante "github.com/cosmos/cosmos-sdk/x/auth/ante"
+	ante "github.com/McDaan/testchain/app/ante"
+	tante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/McDaan/testchain/x/erc20"
 	erc20client "github.com/McDaan/testchain/x/erc20/client"
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
@@ -712,20 +712,20 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 	
-	
-		 //HandlerOptions{
-			//HandlerOptions: ante.HandlerOptions{
-	anteHandler, err := ante.NewAnteHandler(AccountKeeper:   app.AccountKeeper,
+	anteHandler, err := ante.NewAnteHandler(
+		 HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-			//},
+			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
-			TXCounterStoreKey: keys[wasm.StoreKey],)
-		//},
-	
+			TXCounterStoreKey: keys[wasm.StoreKey],
+		},
+	)
 	if err != nil {
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	}
