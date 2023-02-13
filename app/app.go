@@ -712,50 +712,14 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 	
-	options1, err := NewAnteHandler(
-		HandlerOptions{
-			HandlerOptions: authante.HandlerOptions{
-				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.BankKeeper,
-				FeegrantKeeper:  app.FeeGrantKeeper,
-				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,
-			},
-			IBCKeeper:         app.IBCKeeper,
-			WasmConfig:        &wasmConfig,
-			TXCounterStoreKey: keys[wasm.StoreKey],
-		},
-	)
-	
-	if err != nil {
-		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
-	}
-	
-        app.SetAnteHandler(authante.NewAnteHandler(options1))
+	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
+
+	app.SetAnteHandler(encodingConfig.TxConfig, maxGasWanted)
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-
-	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
-	options2 := authante.HandlerOptions{
-		AccountKeeper:   app.AccountKeeper,
-		BankKeeper:      app.BankKeeper,
-		EvmKeeper:       app.EvmKeeper,
-		FeegrantKeeper:  app.FeeGrantKeeper,
-		IBCKeeper:       app.IBCKeeper,
-		FeeMarketKeeper: app.FeeMarketKeeper,
-		SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-		SigGasConsumer:  SigVerificationGasConsumer,
-		Cdc:             appCodec,
-		MaxTxGasWanted:  maxGasWanted,
-	}
-
-	if err := options.Validate(); err != nil {
-		panic(err)
-	}
-
-	app.SetAnteHandler(authante.NewAnteHandler(options2))
+	
 	app.SetEndBlocker(app.EndBlocker)
 	app.setupUpgradeHandlers()
 	
@@ -794,6 +758,43 @@ func NewTestChain(
 
 // Name returns the name of the App
 func (app *TestApp) Name() string { return app.BaseApp.Name() }
+
+func (app *Evmos) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
+	options := authante.HandlerOptions{
+		Cdc:                    app.appCodec,
+		AccountKeeper:          app.AccountKeeper,
+		BankKeeper:             app.BankKeeper,
+		ExtensionOptionChecker: evmostypes.HasDynamicFeeExtensionOption,
+		EvmKeeper:              app.EvmKeeper,
+		StakingKeeper:          app.StakingKeeper,
+		FeegrantKeeper:         app.FeeGrantKeeper,
+		IBCKeeper:              app.IBCKeeper,
+		FeeMarketKeeper:        app.FeeMarketKeeper,
+		SignModeHandler:        txConfig.SignModeHandler(),
+		SigGasConsumer:         authante.SigVerificationGasConsumer,
+		MaxTxGasWanted:         maxGasWanted,
+		TxFeeChecker:           ethante.NewDynamicFeeChecker(app.EvmKeeper),
+		WasmConfig:       	&wasmConfig,
+		TXCounterStoreKey: 	keys[wasm.StoreKey],
+	}
+
+	if err := options.Validate(); err != nil {
+		panic(err)
+	}
+
+	app.SetAnteHandler(ante.NewAnteHandler(options))
+}
+
+func (app *Evmos) setPostHandler() {
+	postHandler, err := posthandler.NewPostHandler(
+		posthandler.HandlerOptions{},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	app.SetPostHandler(postHandler)
+}
 
 // BeginBlocker runs the Tendermint ABCI BeginBlock logic. It executes state changes at the beginning
 // of the new block for every registered module. If there is a registered fork at the current height,
