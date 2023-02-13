@@ -18,6 +18,7 @@ import (
 
 	"github.com/McDaan/testchain/cmd/config"
 	"github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/cosmos/cosmos-sdk/simapp"
 )
 
 func init() {
