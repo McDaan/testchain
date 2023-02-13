@@ -112,6 +112,7 @@ import (
 
 	//ante "github.com/McDaan/testchain/app/ante"
 	authante "github.com/McDaan/testchain/app/ante"
+	authtypes "github.com/McDaan/testchain/types"
 	"github.com/McDaan/testchain/x/erc20"
 	erc20client "github.com/McDaan/testchain/x/erc20/client"
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
@@ -764,7 +765,7 @@ func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64
 		Cdc:                    app.appCodec,
 		AccountKeeper:          app.AccountKeeper,
 		BankKeeper:             app.BankKeeper,
-		ExtensionOptionChecker: evmostypes.HasDynamicFeeExtensionOption,
+		ExtensionOptionChecker: authtypes.HasDynamicFeeExtensionOption,
 		EvmKeeper:              app.EvmKeeper,
 		StakingKeeper:          app.StakingKeeper,
 		FeegrantKeeper:         app.FeeGrantKeeper,
