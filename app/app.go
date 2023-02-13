@@ -759,7 +759,7 @@ func NewTestChain(
 // Name returns the name of the App
 func (app *TestApp) Name() string { return app.BaseApp.Name() }
 
-func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64, appOpts servertypes.AppOptions, keys map[string]*storetypes.KVStoreKey) {
+func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64, appOpts servertypes.AppOptions, keys map[string]*sdk.KVStoreKey) {
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
