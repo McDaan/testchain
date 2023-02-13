@@ -714,7 +714,7 @@ func NewTestChain(
 	
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
 
-	app.SetAnteHandler(encodingConfig.TxConfig, maxGasWanted)
+	app.setAnteHandler(encodingConfig.TxConfig, maxGasWanted)
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
@@ -759,7 +759,7 @@ func NewTestChain(
 // Name returns the name of the App
 func (app *TestApp) Name() string { return app.BaseApp.Name() }
 
-func (app *Evmos) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
+func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
 	options := authante.HandlerOptions{
 		Cdc:                    app.appCodec,
 		AccountKeeper:          app.AccountKeeper,
