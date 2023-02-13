@@ -784,13 +784,13 @@ func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64
 
 func (app *TestApp) setPostHandler() {
 	postHandler, err := posthandler.NewPostHandler(
-		posthandler.HandlerOptions{},
+		postHandler.HandlerOptions{},
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	app.SetPostHandler(postHandler)
+	app.setPostHandler(postHandler)
 }
 
 // BeginBlocker runs the Tendermint ABCI BeginBlock logic. It executes state changes at the beginning
