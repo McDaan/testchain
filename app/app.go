@@ -724,7 +724,7 @@ func NewTestChain(
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
 			TXCounterStoreKey: keys[wasm.StoreKey],
-		}
+		},
 	)
 	
 	if err != nil {
