@@ -110,8 +110,8 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/McDaan/testchain/client/docs/statik"
 
-	ante "github.com/McDaan/testchain/app/ante"
-	tante "github.com/cosmos/cosmos-sdk/x/auth/ante"
+	//ante "github.com/McDaan/testchain/app/ante"
+	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/McDaan/testchain/x/erc20"
 	erc20client "github.com/McDaan/testchain/x/erc20/client"
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
@@ -712,14 +712,14 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 	
-	anteHandler, err := ante.NewAnteHandler(
+	anteHandler, err := NewAnteHandler(
 		 HandlerOptions{
-			HandlerOptions: ante.HandlerOptions{
+			HandlerOptions: authante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
