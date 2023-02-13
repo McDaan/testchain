@@ -64,7 +64,7 @@ func Setup(
 	opts ...wasm.Option,
 ) *TestApp {
 	db := dbm.NewMemDB()
-	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.EncodingConfig(ModuleBasics), simapp.EmptyAppOptions{})
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
@@ -99,7 +99,7 @@ func Setup(
 // SetupTestingApp initializes the IBC-go testing application
 func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	db := dbm.NewMemDB()
-	cfg := params.encoding.MakeConfig(ModuleBasics)
+	cfg := params.EncodingConfig(ModuleBasics)
 	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cfg, simapp.EmptyAppOptions{})
 	return app, NewDefaultGenesisState()
 }
