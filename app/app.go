@@ -111,7 +111,6 @@ import (
 	_ "github.com/McDaan/testchain/client/docs/statik"
 
 	//ante "github.com/McDaan/testchain/app/ante"
-	ethante "github.com/evmos/evmos/v11/app/ante/evm"
 	authante "github.com/McDaan/testchain/app/ante"
 	testtypes "github.com/McDaan/testchain/types"
 	"github.com/McDaan/testchain/x/erc20"
@@ -766,16 +765,13 @@ func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64
 		Cdc:                    app.appCodec,
 		AccountKeeper:          app.AccountKeeper,
 		BankKeeper:             app.BankKeeper,
-		ExtensionOptionChecker: testtypes.HasDynamicFeeExtensionOption,
 		EvmKeeper:              app.EvmKeeper,
-		StakingKeeper:          app.StakingKeeper,
 		FeegrantKeeper:         app.FeeGrantKeeper,
 		IBCKeeper:              app.IBCKeeper,
 		FeeMarketKeeper:        app.FeeMarketKeeper,
 		SignModeHandler:        txConfig.SignModeHandler(),
 		SigGasConsumer:         authante.SigVerificationGasConsumer,
 		MaxTxGasWanted:         maxGasWanted,
-		TxFeeChecker:           ethante.NewDynamicFeeChecker(app.EvmKeeper),
 		WasmConfig:       	&wasmConfig,
 		TXCounterStoreKey: 	keys[wasm.StoreKey],
 	}
