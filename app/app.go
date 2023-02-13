@@ -111,7 +111,7 @@ import (
 	_ "github.com/McDaan/testchain/client/docs/statik"
 
 	"github.com/McDaan/testchain/app/ante"
-	"github.com/McDaan/testchain/app"
+	tapp "github.com/McDaan/testchain/app"
 	"github.com/McDaan/testchain/x/erc20"
 	erc20client "github.com/McDaan/testchain/x/erc20/client"
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
@@ -712,14 +712,14 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 	
-	anteHandler, err := newCosmosAnteHandler(
+	anteHandler, err := tapp.newCosmosAnteHandler(
 		HandlerOptions{
-			HandlerOptions: ante.HandlerOptions{
+			HandlerOptions: tapp.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  tapp.DefaultSigVerificationGasConsumer,
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
