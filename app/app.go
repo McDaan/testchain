@@ -112,7 +112,6 @@ import (
 
 	//ante "github.com/McDaan/testchain/app/ante"
 	authante "github.com/McDaan/testchain/app/ante"
-	testtypes "github.com/McDaan/testchain/types"
 	"github.com/McDaan/testchain/x/erc20"
 	erc20client "github.com/McDaan/testchain/x/erc20/client"
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
