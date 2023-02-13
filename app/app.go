@@ -714,7 +714,7 @@ func NewTestChain(
 	
 	anteHandler, err := NewAnteHandler(
 		 HandlerOptions{
-			HandlerOptions: authante.HandlerOptions{
+			HandlerOptions: NewHandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
@@ -737,7 +737,7 @@ func NewTestChain(
 	app.SetBeginBlocker(app.BeginBlocker)
 
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
-	options := ante.HandlerOptions{
+	options := authante.HandlerOptions{
 		AccountKeeper:   app.AccountKeeper,
 		BankKeeper:      app.BankKeeper,
 		EvmKeeper:       app.EvmKeeper,
@@ -754,7 +754,7 @@ func NewTestChain(
 		panic(err)
 	}
 
-	app.SetAnteHandler(ante.NewAnteHandler(options))
+	app.SetAnteHandler(authante.NewAnteHandler(options))
 	app.SetEndBlocker(app.EndBlocker)
 	app.setupUpgradeHandlers()
 	
