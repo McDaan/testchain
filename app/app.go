@@ -782,17 +782,6 @@ func (app *TestApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64
 	app.SetAnteHandler(authante.NewAnteHandler(options))
 }
 
-func (app *TestApp) SetPostHandler() {
-	postHandler, err := posthandler.NewPostHandler(
-		posthandler.HandlerOptions{},
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	app.SetPostHandler(postHandler)
-}
-
 // BeginBlocker runs the Tendermint ABCI BeginBlock logic. It executes state changes at the beginning
 // of the new block for every registered module. If there is a registered fork at the current height,
 // BeginBlocker will schedule the upgrade plan and perform the state migration (if any).
