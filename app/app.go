@@ -712,14 +712,14 @@ func NewTestChain(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 	
-	anteHandler, err := tapp.newCosmosAnteHandler(
+	anteHandler, err := ante.newAnteHandler(
 		HandlerOptions{
-			HandlerOptions: tapp.HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  tapp.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
