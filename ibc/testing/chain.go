@@ -22,6 +22,7 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	testapp "github.com/McDaan/testchain/app"
+	"github.com/CosmWasm/wasmd/x/wasm"
 )
 
 // ChainIDPrefix defines the default chain ID prefix for Acre test chains
