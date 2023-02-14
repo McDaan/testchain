@@ -40,8 +40,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	//"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/CosmWasm/wasmd/app/params"
-	wasmapp "github.com/CosmWasm/wasmd/app"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -55,6 +53,10 @@ import (
 	"github.com/evmos/ethermint/server/config"
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
+	
+	"github.com/CosmWasm/wasmd/app/params"
+	wasmapp "github.com/CosmWasm/wasmd/app"
+	"github.com/CosmWasm/wasmd/x/wasm"
 )
 
 // use this for clarity in argument list
