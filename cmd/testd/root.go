@@ -42,6 +42,9 @@ import (
 	"github.com/McDaan/testchain/app"
 	cmdcfg "github.com/McDaan/testchain/cmd/config"
 	testkr "github.com/McDaan/testchain/crypto/keyring"
+	
+	wasmapp "github.com/CosmWasm/wasmd/app"
+	wasmparams "github.com/CosmWasm/wasmd/app/params"
 )
 
 const (
@@ -50,8 +53,8 @@ const (
 
 // NewRootCmd creates a new root command for acred. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-	encodingConfig := encoding.MakeConfig(app.ModuleBasics)
+func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
+	encodingConfig := wasmapp.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
