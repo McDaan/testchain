@@ -116,7 +116,7 @@ func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
 	}
 
 	cfg := sdk.GetConfig()
-	cfg.SetAddressVerifier(wasmtypes.VerifyAddressLen())
+	//cfg.SetAddressVerifier(wasmtypes.VerifyAddressLen())
 	cfg.Seal()
 
 	rootCmd.AddCommand(
