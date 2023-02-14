@@ -44,7 +44,7 @@ import (
 	testkr "github.com/McDaan/testchain/crypto/keyring"
 	
 	"github.com/prometheus/client_golang/prometheus"
-	//wasmapp "github.com/CosmWasm/wasmd/app"
+	wasmapp "github.com/CosmWasm/wasmd/app"
 	wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -57,7 +57,7 @@ const (
 
 // NewRootCmd creates a new root command for testd. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
+func NewRootCmd() (*cobra.Command, wasmapp.EncodingConfig) {
 	encodingConfig := wasmparams.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
