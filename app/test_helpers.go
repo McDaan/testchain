@@ -28,6 +28,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmapp "github.com/CosmWasm/wasmd/app"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/stretchr/testify/require"
 )
 
 func init() {
