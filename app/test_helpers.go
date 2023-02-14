@@ -20,8 +20,8 @@ import (
 
 	"github.com/McDaan/testchain/cmd/config"
 	"github.com/CosmWasm/wasmd/x/wasm"
-	"github.com/CosmWasm/wasmd/app/params"
-	//"github.com/cosmos/cosmos-sdk/simapp"
+	//"github.com/CosmWasm/wasmd/app/params"
+	"github.com/cosmos/cosmos-sdk/simapp"
 )
 
 func init() {
