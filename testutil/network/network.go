@@ -102,7 +102,7 @@ type Config struct {
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig() Config {
-	encCfg := simapp.MakeEncodingConfig()
+	encCfg := encoding.MakeConfig(app.ModuleBasics)
 
 	return Config{
 		Codec:             encCfg.Marshaler,
@@ -113,7 +113,7 @@ func DefaultConfig() Config {
 		AppConstructor:    NewAppConstructor(encCfg),
 		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Marshaler),
 		TimeoutCommit:     2 * time.Second,
-		ChainID:           fmt.Sprintf("testchain-1", tmrand.Int63n(9999999999999)+1),
+		ChainID:           fmt.Sprintf("testchain_9100-1", tmrand.Int63n(9999999999999)+1),
 		NumValidators:     4,
 		BondDenom:         ethermint.AttoPhoton,
 		MinGasPrices:      fmt.Sprintf("0.000006%s", ethermint.AttoPhoton),
