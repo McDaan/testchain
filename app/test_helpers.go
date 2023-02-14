@@ -50,6 +50,15 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
+func MakeTestEncodingConfig() simapp.EncodingConfig {
+	encodingConfig := simappp.MakeTestEncodingConfig()
+	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	return encodingConfig
+}
+
 func init() {
 	feemarkettypes.DefaultMinGasPrice = sdk.ZeroDec()
 	cfg := sdk.GetConfig()
@@ -64,7 +73,7 @@ func Setup(
 	opts ...wasm.Option,
 ) *TestApp {
 	db := dbm.NewMemDB()
-	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, encoding.MakeConfig(ModuleBasics), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts)
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeTestEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts)
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
@@ -100,7 +109,9 @@ func Setup(
 func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	opts := wasm.Option
 	db := dbm.NewMemDB()
-	cfg := encoding.MakeConfig(ModuleBasics)
+	cfg := MakeTestEncodingConfig()
 	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cfg, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts)
 	return app, NewDefaultGenesisState()
 }
+
+type EmptyAppOptions struct{}
