@@ -56,7 +56,7 @@ import (
 	
 	wasmappparams "github.com/CosmWasm/wasmd/app/params"
 	wasmapp "github.com/CosmWasm/wasmd/app"
-	//"github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/CosmWasm/wasmd/x/wasm"
 )
 
 // use this for clarity in argument list
@@ -131,10 +131,14 @@ func DefaultConfig() Config {
 // NewAppConstructor returns a new Evmos AppConstructor
 func NewAppConstructor(encodingCfg wasmappparams.EncodingConfig) AppConstructor {
 	return func(val Validator) servertypes.Application {
+		// use this for clarity in argument list
+		var EmptyWasmOpts []wasm.Option
 		return app.NewTestChain(
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 			encodingCfg,
+			wasm.EnableAllProposals,
 			simapp.EmptyAppOptions{},
+			EmptyWasmOpts,
 			baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 		)
