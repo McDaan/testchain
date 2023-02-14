@@ -120,7 +120,7 @@ func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 
 type EmptyAppOptions struct{}
 
-func setup(t testing.TB, withGenesis bool, invCheckPeriod uint, opts ...wasm.Option) (*TestApp, wasmapp.GenesisState) {
+func setup(t testing.TB, withGenesis bool, invCheckPeriod uint, opts ...wasm.Option) (*TestApp, simapp.GenesisState) {
 	nodeHome := t.TempDir()
 	snapshotDir := filepath.Join(nodeHome, "data", "snapshots")
 	snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
