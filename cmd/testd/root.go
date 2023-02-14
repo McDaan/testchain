@@ -261,9 +261,9 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 	}
 
 	var wasmOpts []wasm.Option
-	//if cast.ToBool(appOpts.Get("telemetry.enabled")) {
-		//wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
-	//}
+	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
+		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
+	}
 	
 	testApp := app.NewTestChain(
 		logger, db, traceStore, true, skipUpgradeHeights,
