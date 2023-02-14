@@ -55,9 +55,16 @@ const (
 	EnvPrefix = "TEST"
 )
 
+type EncodingConfig struct {
+	Amino             *codec.LegacyAmino
+	InterfaceRegistry codectypes.InterfaceRegistry
+	Marshaler         codec.ProtoCodecMarshaler
+	TxConfig          client.TxConfig
+}
+
 // NewRootCmd creates a new root command for testd. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, wasmapp.EncodingConfig) {
+func NewRootCmd() (*cobra.Command, EncodingConfig) {
 	encodingConfig := wasmparams.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
