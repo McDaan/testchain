@@ -45,6 +45,9 @@ import (
 	
 	wasmapp "github.com/CosmWasm/wasmd/app"
 	wasmparams "github.com/CosmWasm/wasmd/app/params"
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
 const (
@@ -112,6 +115,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 	}
 
 	cfg := sdk.GetConfig()
+	cfg.SetAddressVerifier(wasmtypes.VerifyAddressLen())
 	cfg.Seal()
 
 	rootCmd.AddCommand(
@@ -153,6 +157,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
+	wasm.AddModuleInitFlags(startCmd)
 }
 
 func queryCommand() *cobra.Command {
@@ -254,12 +259,18 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		panic(err)
 	}
 
+	var wasmOpts []wasm.Option
+	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
+		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
+	}
+	
 	testApp := app.NewTestChain(
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
 		a.encCfg,
 		appOpts,
+		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(sdkserver.FlagMinGasPrices))),
 		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(sdkserver.FlagHaltHeight))),
@@ -290,14 +301,15 @@ func (a appCreator) appExport(
 		return servertypes.ExportedApp{}, errors.New("application home not set")
 	}
 
+	var emptyWasmOpts []wasm.Option
 	if height != -1 {
-		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, wasm.EnableAllProposals, appOpts, emptyWasmOpts)
 
 		if err := testApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, wasm.EnableAllProposals, appOpts, emptyWasmOpts)
 	}
 
 	return testApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
