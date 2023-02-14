@@ -135,7 +135,7 @@ func setup(t testing.TB, withGenesis bool, invCheckPeriod uint, opts ...wasm.Opt
 	if withGenesis {
 		return app, NewDefaultGenesisState()
 	}
-	return app, GenesisState{}
+	return app, simapp.GenesisState{}
 }
 
 // SetupWithGenesisValSet initializes a new WasmApp with a validator set and genesis accounts
