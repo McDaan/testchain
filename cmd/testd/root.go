@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/simapp/params"
+	//"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 
 	"github.com/spf13/cast"
@@ -34,7 +34,7 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	ethermintclient "github.com/evmos/ethermint/client"
 	"github.com/evmos/ethermint/client/debug"
-	"github.com/evmos/ethermint/encoding"
+	//"github.com/evmos/ethermint/encoding"
 	ethermintserver "github.com/evmos/ethermint/server"
 	servercfg "github.com/evmos/ethermint/server/config"
 	srvflags "github.com/evmos/ethermint/server/flags"
@@ -43,6 +43,7 @@ import (
 	cmdcfg "github.com/McDaan/testchain/cmd/config"
 	testkr "github.com/McDaan/testchain/crypto/keyring"
 	
+	"github.com/prometheus/client_golang/prometheus"
 	wasmapp "github.com/CosmWasm/wasmd/app"
 	wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
