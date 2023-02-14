@@ -96,7 +96,7 @@ type Config struct {
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig() Config {
-	encCfg := encoding.MakeConfig(app.ModuleBasics)
+	encCfg := MakeEncodingConfig()
 
 	return Config{
 		Codec:             encCfg.Marshaler,
