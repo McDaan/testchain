@@ -51,10 +51,10 @@ const (
 	EnvPrefix = "TEST"
 )
 
-// NewRootCmd creates a new root command for acred. It is called once in the
+// NewRootCmd creates a new root command for testd. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, wasmapp.EncodingConfig) {
-	encodingConfig := wasmapp.MakeEncodingConfig()
+func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
+	encodingConfig := app.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
