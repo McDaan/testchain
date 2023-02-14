@@ -54,7 +54,7 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	
-	"github.com/CosmWasm/wasmd/app/params"
+	wasmappparams "github.com/CosmWasm/wasmd/app/params"
 	wasmapp "github.com/CosmWasm/wasmd/app"
 	"github.com/CosmWasm/wasmd/x/wasm"
 )
