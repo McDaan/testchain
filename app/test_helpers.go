@@ -96,7 +96,7 @@ func Setup(
 	return app
 }
 
-// SetupTestingApp initializes the IBC-go testing application.
+// SetupTestingApp initializes the IBC-go testing application
 func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	opts := wasm.Option
 	db := dbm.NewMemDB()
