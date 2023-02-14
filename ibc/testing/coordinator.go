@@ -5,6 +5,8 @@ import (
 	"time"
 
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
+	testapp "github.com/McDaan/testchain/app"
+	//"github.com/CosmWasm/wasmd/x/wasm"
 )
 
 var globalStartTime = time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
@@ -18,7 +20,7 @@ func NewCoordinator(t *testing.T, nEVMChains, mCosmosChains int) *ibctesting.Coo
 	}
 
 	// setup EVM chains
-	ibctesting.DefaultTestingAppInit = DefaultTestingAppInit
+	ibctesting.DefaultTestingAppInit = testapp.DefaultTestingAppInit
 
 	for i := 1; i <= nEVMChains; i++ {
 		chainID := ibctesting.GetChainID(i)
