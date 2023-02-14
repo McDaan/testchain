@@ -44,8 +44,8 @@ import (
 	testkr "github.com/McDaan/testchain/crypto/keyring"
 	
 	"github.com/prometheus/client_golang/prometheus"
-	wasmapp "github.com/CosmWasm/wasmd/app"
-	wasmparams "github.com/CosmWasm/wasmd/app/params"
+	//wasmapp "github.com/CosmWasm/wasmd/app"
+	//wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
