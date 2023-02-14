@@ -61,6 +61,9 @@ func MakeTestEncodingConfig() simappparams.EncodingConfig {
 	return encodingConfig
 }
 
+// use this for clarity in argument list
+var EmptyWasmOpts []wasm.Option
+
 func init() {
 	feemarkettypes.DefaultMinGasPrice = sdk.ZeroDec()
 	cfg := sdk.GetConfig()
