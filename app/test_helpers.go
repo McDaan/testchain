@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 	//"github.com/cosmos/ibc-go/v3/testing/simapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	//simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -24,7 +24,7 @@ import (
 
 	"github.com/McDaan/testchain/cmd/config"
 	"github.com/CosmWasm/wasmd/x/wasm"
-	//"github.com/CosmWasm/wasmd/app/params"
+	wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/cosmos/cosmos-sdk/simapp"
 )
 
@@ -107,7 +107,7 @@ func Setup(
 	opts ...wasm.Option,
 ) *TestApp {
 	db := dbm.NewMemDB()
-	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, wasmparams.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
@@ -142,7 +142,7 @@ func Setup(
 // SetupTestingApp initializes the IBC-go testing application
 func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	db := dbm.NewMemDB()
-	cfg := MakeEncodingConfig()
+	cfg := wasmparams.MakeEncodingConfig()
 	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cfg, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
 	return app, NewDefaultGenesisState()
 }
