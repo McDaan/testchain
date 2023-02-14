@@ -40,7 +40,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/CosmWasm/wasmd/app/params"
+	wasmapp "github.com/CosmWasm/wasmd/app"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -96,7 +96,7 @@ type Config struct {
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig() Config {
-	encCfg := MakeEncodingConfig()
+	encCfg := wasmapp.MakeEncodingConfig()
 
 	return Config{
 		Codec:             encCfg.Marshaler,
