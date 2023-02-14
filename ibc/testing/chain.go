@@ -21,7 +21,7 @@ import (
 	"github.com/evmos/ethermint/crypto/ethsecp256k1"
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
-	"github.com/McDaan/testchain/app"
+	testapp "github.com/McDaan/testchain/app"
 )
 
 // ChainIDPrefix defines the default chain ID prefix for Acre test chains
@@ -70,7 +70,7 @@ func NewTestChain(t *testing.T, coord *ibcgotesting.Coordinator, chainID string)
 		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, amount)),
 	}
 
-	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, chainID, balance)
+	app := testapp.SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, chainID, balance)
 
 	// create current header and call begin block
 	header := tmproto.Header{
