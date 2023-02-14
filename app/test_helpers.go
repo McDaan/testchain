@@ -19,7 +19,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 
-	"github.com/evmos/ethermint/encoding"
+	//"github.com/evmos/ethermint/encoding"
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
 	"github.com/McDaan/testchain/cmd/config"
