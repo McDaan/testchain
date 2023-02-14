@@ -228,7 +228,7 @@ func initAppConfig() (string, interface{}) {
 }
 
 type appCreator struct {
-	encCfg params.EncodingConfig
+	encCfg app.EncodingConfig
 }
 
 // newApp is an appCreator
