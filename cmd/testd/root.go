@@ -48,7 +48,7 @@ import (
 	wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	//wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
 const (
