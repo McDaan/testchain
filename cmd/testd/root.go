@@ -55,17 +55,10 @@ const (
 	EnvPrefix = "TEST"
 )
 
-type EncodingConfig struct {
-	Amino             *codec.LegacyAmino
-	InterfaceRegistry codectypes.InterfaceRegistry
-	Marshaler         codec.ProtoCodecMarshaler
-	TxConfig          client.TxConfig
-}
-
 // NewRootCmd creates a new root command for testd. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, EncodingConfig) {
-	encodingConfig := wasmparams.MakeEncodingConfig()
+func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
+	encodingConfig := wasmapp.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -276,7 +269,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
-		wasmparams.MakeEncodingConfig(),
+		wasmapp.MakeEncodingConfig(),
 		appOpts,
 		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
@@ -311,13 +304,13 @@ func (a appCreator) appExport(
 
 	var emptyWasmOpts []wasm.Option
 	if height != -1 {
-		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), wasmparams.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
 
 		if err := testApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmparams.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
 	}
 
 	return testApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
