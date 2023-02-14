@@ -54,8 +54,8 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	
-	//wasmappparams "github.com/CosmWasm/wasmd/app/params"
-	wasmapp "github.com/CosmWasm/wasmd/app"
+	wasmappparams "github.com/CosmWasm/wasmd/app/params"
+	//wasmapp "github.com/CosmWasm/wasmd/app"
 	//"github.com/CosmWasm/wasmd/x/wasm"
 )
 
@@ -129,7 +129,7 @@ func DefaultConfig() Config {
 }
 
 // NewAppConstructor returns a new Evmos AppConstructor
-func NewAppConstructor(encodingCfg wasmapp.EncodingConfig) AppConstructor {
+func NewAppConstructor(encodingCfg wasmappparams.EncodingConfig) AppConstructor {
 	return func(val Validator) servertypes.Application {
 		return app.NewTestChain(
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
