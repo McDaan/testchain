@@ -131,7 +131,7 @@ func setup(t testing.TB, withGenesis bool, invCheckPeriod uint, opts ...wasm.Opt
 	baseAppOpts := []func(*bam.BaseApp){bam.SetSnapshotStore(snapshotStore), bam.SetSnapshotKeepRecent(2)}
 	db := dbm.NewMemDB()
 	t.Cleanup(func() { db.Close() })
-	app := NewTestApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts, baseAppOpts...)
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts, baseAppOpts...)
 	if withGenesis {
 		return app, NewDefaultGenesisState()
 	}
