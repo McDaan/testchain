@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 	"time"
-	"std"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
