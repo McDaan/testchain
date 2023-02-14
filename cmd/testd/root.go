@@ -229,7 +229,7 @@ func initAppConfig() (string, interface{}) {
 }
 
 type appCreator struct {
-	encCfg EncodingConfig
+	encCfg wasmparams.EncodingConfig
 }
 
 // newApp is an appCreator
