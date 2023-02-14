@@ -102,7 +102,7 @@ type Config struct {
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig() Config {
-	encCfg := wasmapp.MakeEncodingConfig()
+	encCfg := simapp.MakeEncodingConfig()
 
 	return Config{
 		Codec:             encCfg.Marshaler,
