@@ -54,9 +54,9 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	
-	wasmappparams "github.com/CosmWasm/wasmd/app/params"
-	wasmapp "github.com/CosmWasm/wasmd/app"
-	"github.com/CosmWasm/wasmd/x/wasm"
+	//wasmappparams "github.com/CosmWasm/wasmd/app/params"
+	//wasmapp "github.com/CosmWasm/wasmd/app"
+	//"github.com/CosmWasm/wasmd/x/wasm"
 )
 
 // use this for clarity in argument list
