@@ -24,7 +24,7 @@ import (
 
 	"github.com/McDaan/testchain/cmd/config"
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmparams "github.com/CosmWasm/wasmd/app/params"
+	wasmapp "github.com/CosmWasm/wasmd/app"
 	"github.com/cosmos/cosmos-sdk/simapp"
 )
 
@@ -56,40 +56,6 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
-type EncodingConfig struct {
-	Amino             *codec.LegacyAmino
-	InterfaceRegistry codectypes.InterfaceRegistry
-	Marshaler         codec.ProtoCodecMarshaler
-	TxConfig          client.TxConfig
-}
-
-func NewEncodingConfig() EncodingConfig {
-	var (
-		amino             = codec.NewLegacyAmino()
-		interfaceRegistry = codectypes.NewInterfaceRegistry()
-		marshaler         = codec.NewProtoCodec(interfaceRegistry)
-		txConfig          = tx.NewTxConfig(marshaler, tx.DefaultSignModes)
-	)
-
-	return EncodingConfig{
-		Amino:             amino,
-		InterfaceRegistry: interfaceRegistry,
-		Marshaler:         marshaler,
-		TxConfig:          txConfig,
-	}
-}
-
-func MakeEncodingConfig() EncodingConfig {
-	config := NewEncodingConfig()
-
-	std.RegisterLegacyAminoCodec(config.Amino)
-	std.RegisterInterfaces(config.InterfaceRegistry)
-	ModuleBasics.RegisterLegacyAminoCodec(config.Amino)
-	ModuleBasics.RegisterInterfaces(config.InterfaceRegistry)
-
-	return config
-}
-
 // use this for clarity in argument list
 var EmptyWasmOpts []wasm.Option
 
@@ -104,10 +70,9 @@ func init() {
 func Setup(
 	isCheckTx bool,
 	feemarketGenesis *feemarkettypes.GenesisState,
-	opts ...wasm.Option,
 ) *TestApp {
 	db := dbm.NewMemDB()
-	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, wasmparams.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
@@ -142,7 +107,7 @@ func Setup(
 // SetupTestingApp initializes the IBC-go testing application
 func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	db := dbm.NewMemDB()
-	cfg := wasmparams.MakeEncodingConfig()
+	cfg := wasmapp.MakeEncodingConfig()
 	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cfg, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
 	return app, NewDefaultGenesisState()
 }
