@@ -45,7 +45,7 @@ import (
 	
 	"github.com/prometheus/client_golang/prometheus"
 	//wasmapp "github.com/CosmWasm/wasmd/app"
-	//wasmparams "github.com/CosmWasm/wasmd/app/params"
+	wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -269,7 +269,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
-		app.MakeEncodingConfig(),
+		wasmparams.MakeEncodingConfig(),
 		appOpts,
 		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
@@ -304,13 +304,13 @@ func (a appCreator) appExport(
 
 	var emptyWasmOpts []wasm.Option
 	if height != -1 {
-		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), app.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), wasmparams.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
 
 		if err := testApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), app.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmparams.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
 	}
 
 	return testApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
