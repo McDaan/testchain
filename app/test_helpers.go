@@ -117,12 +117,30 @@ func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 
 type EmptyAppOptions struct{}
 
+func setup(t testing.TB, withGenesis bool, invCheckPeriod uint, opts ...wasm.Option) (*TestApp, GenesisState) {
+	nodeHome := t.TempDir()
+	snapshotDir := filepath.Join(nodeHome, "data", "snapshots")
+	snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
+	require.NoError(t, err)
+	t.Cleanup(func() { snapshotDB.Close() })
+	snapshotStore, err := snapshots.NewStore(snapshotDB, snapshotDir)
+	require.NoError(t, err)
+	baseAppOpts := []func(*bam.BaseApp){bam.SetSnapshotStore(snapshotStore), bam.SetSnapshotKeepRecent(2)}
+	db := dbm.NewMemDB()
+	t.Cleanup(func() { db.Close() })
+	app := NewWasmApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts, baseAppOpts...)
+	if withGenesis {
+		return app, NewDefaultGenesisState()
+	}
+	return app, GenesisState{}
+}
+
 // SetupWithGenesisValSet initializes a new WasmApp with a validator set and genesis accounts
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
 // of one consensus engine unit (10^6) in the default token of the WasmApp from first genesis
 // account. A Nop logger is set in WasmApp.
 func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, chainID string, opts []wasm.Option, balances ...banktypes.Balance) *TestApp {
-	app, genesisState := Setup(t, true, 5, opts...)
+	app, genesisState := setup(t, true, 5, opts...)
 	// set genesis accounts
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.appCodec.MustMarshalJSON(authGenesis)
