@@ -53,7 +53,7 @@ const (
 
 // NewRootCmd creates a new root command for acred. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
+func NewRootCmd() (*cobra.Command, wasmapp.EncodingConfig) {
 	encodingConfig := wasmapp.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
