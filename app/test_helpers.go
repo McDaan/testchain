@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"time"
 	"testing"
+	"path/filepath"
 	
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -29,6 +30,8 @@ import (
 	wasmapp "github.com/CosmWasm/wasmd/app"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/stretchr/testify/require"
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/snapshots"
 )
 
 func init() {
@@ -128,7 +131,7 @@ func setup(t testing.TB, withGenesis bool, invCheckPeriod uint, opts ...wasm.Opt
 	baseAppOpts := []func(*bam.BaseApp){bam.SetSnapshotStore(snapshotStore), bam.SetSnapshotKeepRecent(2)}
 	db := dbm.NewMemDB()
 	t.Cleanup(func() { db.Close() })
-	app := NewWasmApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts, baseAppOpts...)
+	app := NewTestApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts, baseAppOpts...)
 	if withGenesis {
 		return app, NewDefaultGenesisState()
 	}
