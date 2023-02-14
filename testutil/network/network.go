@@ -39,7 +39,7 @@ import (
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	//"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,7 +60,7 @@ import (
 )
 
 // use this for clarity in argument list
-var EmptyWasmOpts []wasm.Option
+//var EmptyWasmOpts []wasm.Option
 
 // package-wide network lock to only allow one test network at a time
 var lock = new(sync.Mutex)
@@ -134,7 +134,7 @@ func NewAppConstructor(encodingCfg params.EncodingConfig) AppConstructor {
 		return app.NewTestChain(
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 			encodingCfg,
-			EmptyWasmOpts,
+			simapp.EmptyAppOptions{},
 			baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 		)
@@ -697,3 +697,5 @@ func centerText(text string, width int) string {
 
 	return fmt.Sprintf("%s%s%s", leftBuffer, text, rightBuffer)
 }
+
+type EmptyAppOptions struct{}
