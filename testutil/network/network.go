@@ -57,6 +57,9 @@ import (
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 )
 
+// use this for clarity in argument list
+var EmptyWasmOpts []wasm.Option
+
 // package-wide network lock to only allow one test network at a time
 var lock = new(sync.Mutex)
 
@@ -129,7 +132,7 @@ func NewAppConstructor(encodingCfg params.EncodingConfig) AppConstructor {
 		return app.NewTestChain(
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 			encodingCfg,
-			simapp.EmptyAppOptions{},
+			EmptyWasmOpts,
 			baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 		)
