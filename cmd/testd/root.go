@@ -57,7 +57,7 @@ const (
 
 // NewRootCmd creates a new root command for testd. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
+func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
 	encodingConfig := wasmparams.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
