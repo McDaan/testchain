@@ -270,6 +270,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
 		wasmapp.MakeEncodingConfig(),
+		wasm.EnableAllProposals,
 		appOpts,
 		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
