@@ -78,7 +78,7 @@ func Setup(
 	opts ...wasm.Option,
 ) *TestApp {
 	db := dbm.NewMemDB()
-	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeTestEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts)
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeTestEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
@@ -115,7 +115,7 @@ func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	opts := wasm.Option
 	db := dbm.NewMemDB()
 	cfg := MakeTestEncodingConfig()
-	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cfg, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts)
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cfg, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
 	return app, NewDefaultGenesisState()
 }
 
