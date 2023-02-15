@@ -22,7 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 
-	enccodec "github.com/McDaan/testing/encoding/codec"
+	enccodec "github.com/McDaan/testchain/params/codec"
 )
 
 // MakeConfig creates an EncodingConfig for testing
