@@ -11,7 +11,7 @@ import (
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
-	//"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 
 	"github.com/spf13/cast"
@@ -45,8 +45,8 @@ import (
 	testkr "github.com/McDaan/testchain/crypto/keyring"
 	
 	"github.com/prometheus/client_golang/prometheus"
-	wasmapp "github.com/CosmWasm/wasmd/app"
-	wasmparams "github.com/CosmWasm/wasmd/app/params"
+	testapp "github.com/McDaan/testchain/params"
+	//wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	//wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -78,8 +78,8 @@ func AddGenesisWasmMsgCmd(defaultNodeHome string) *cobra.Command {
 
 // NewRootCmd creates a new root command for testd. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
-	encodingConfig := wasmapp.MakeEncodingConfig()
+func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
+	encodingConfig := testapp.MakeConfig(app.ModuleBasics)
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -251,7 +251,7 @@ func initAppConfig() (string, interface{}) {
 }
 
 type appCreator struct {
-	encCfg wasmparams.EncodingConfig
+	encCfg params.EncodingConfig
 }
 
 // newApp is an appCreator
@@ -291,8 +291,8 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
-		wasmapp.MakeEncodingConfig(),
-		testchain.GetWasmEnabledProposals(),
+		testapp.MakeConfig(app.ModuleBasics),
+		app.GetEnabledProposals(),
 		appOpts,
 		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
@@ -327,13 +327,13 @@ func (a appCreator) appExport(
 
 	//var emptyWasmOpts []wasm.Option
 	if height != -1 {
-		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), testchain.GetWasmEnabledProposals(), appOpts, []wasmkeeper.Option{})
+		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), testapp.MakeConfig(app.ModuleBasics), app.GetEnabledProposals(), appOpts, []wasmkeeper.Option{})
 
 		if err := testApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), testchain.GetWasmEnabledProposals(), appOpts, []wasmkeeper.Option{})
+		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmapp.MakeConfig(app.ModuleBasics), app.GetEnabledProposals(), appOpts, []wasmkeeper.Option{})
 	}
 
 	return testApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
