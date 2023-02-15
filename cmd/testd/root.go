@@ -333,7 +333,7 @@ func (a appCreator) appExport(
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmapp.MakeConfig(app.ModuleBasics), app.GetEnabledProposals(), appOpts, []wasmkeeper.Option{})
+		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), testapp.MakeConfig(app.ModuleBasics), app.GetEnabledProposals(), appOpts, []wasmkeeper.Option{})
 	}
 
 	return testApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
