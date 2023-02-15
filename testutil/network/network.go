@@ -54,8 +54,8 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	
-	wasmappparams "github.com/CosmWasm/wasmd/app/params"
-	wasmapp "github.com/CosmWasm/wasmd/app"
+	testparams "github.com/McDaan/testchain/params"
+	//wasmapp "github.com/CosmWasm/wasmd/app"
 	"github.com/CosmWasm/wasmd/x/wasm"
 )
 
@@ -102,7 +102,7 @@ type Config struct {
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig() Config {
-	encCfg := wasmapp.MakeEncodingConfig()
+	encCfg := testparams.MakeConfig(ModuleBasics)
 
 	return Config{
 		Codec:             encCfg.Marshaler,
@@ -129,7 +129,7 @@ func DefaultConfig() Config {
 }
 
 // NewAppConstructor returns a new Evmos AppConstructor
-func NewAppConstructor(encodingCfg wasmappparams.EncodingConfig) AppConstructor {
+func NewAppConstructor(encodingCfg testparams.EncodingConfig) AppConstructor {
 	return func(val Validator) servertypes.Application {
 		// use this for clarity in argument list
 		var EmptyWasmOpts []wasm.Option
