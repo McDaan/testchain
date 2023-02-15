@@ -479,7 +479,7 @@ func NewTestChain(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 	evidenceRouter := evidencetypes.NewRouter()
-	app.evidenceKeeper.SetRouter(evidenceRouter)
+	evidenceKeeper.SetRouter(evidenceRouter)
 	
 	// create IBC module from bottom to top of stack
 	
