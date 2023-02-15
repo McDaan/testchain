@@ -717,6 +717,11 @@ func NewTestChain(
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
 		}
+		
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+		if err := app.wasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			tmos.Exit(fmt.Sprintf("failed initialize pinned codes %s", err))
+		}
 	}
 	
 	// add test gRPC service for testing gRPC queries in isolation
