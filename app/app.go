@@ -212,13 +212,13 @@ var (
 // GetEnabledProposals parses the ProposalsEnabled / EnableSpecificProposals values to
 // produce a list of enabled proposals to pass into wasmd app.
 func GetEnabledProposals() []wasm.ProposalType {
-	if EnableSpecificProposals == "" {
-		if ProposalsEnabled == "true" {
+	if WasmEnableSpecificProposals == "" {
+		if WasmProposalsEnabled == "true" {
 			return wasm.EnableAllProposals
 		}
 		return wasm.DisableAllProposals
 	}
-	chunks := strings.Split(EnableSpecificProposals, ",")
+	chunks := strings.Split(WasmEnableSpecificProposals, ",")
 	proposals, err := wasm.ConvertToProposals(chunks)
 	if err != nil {
 		panic(err)
@@ -717,7 +717,7 @@ func NewTestChain(
 		}
 		
 		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
-		if err := app.wasmKeeper.InitializePinnedCodes(ctx); err != nil {
+		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
 			tmos.Exit(fmt.Sprintf("failed initialize pinned codes %s", err))
 		}
 	}
