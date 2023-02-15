@@ -27,7 +27,7 @@ import (
 
 	"github.com/McDaan/testchain/cmd/config"
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmapp "github.com/CosmWasm/wasmd/app"
+	testapp "github.com/testchain/app"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/stretchr/testify/require"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -78,7 +78,7 @@ func Setup(
 	feemarketGenesis *feemarkettypes.GenesisState,
 ) *TestApp {
 	db := dbm.NewMemDB()
-	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, testapp.MakeConfig(ModuleBasics), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
@@ -113,7 +113,7 @@ func Setup(
 // SetupTestingApp initializes the IBC-go testing application
 func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	db := dbm.NewMemDB()
-	cfg := wasmapp.MakeEncodingConfig()
+	cfg := testapp.MakeConfig(ModuleBasics)
 	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, cfg, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, EmptyWasmOpts)
 	return app, NewDefaultGenesisState()
 }
@@ -131,7 +131,7 @@ func setup(t testing.TB, withGenesis bool, invCheckPeriod uint, opts ...wasm.Opt
 	baseAppOpts := []func(*bam.BaseApp){bam.SetSnapshotStore(snapshotStore), bam.SetSnapshotKeepRecent(2)}
 	db := dbm.NewMemDB()
 	t.Cleanup(func() { db.Close() })
-	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts, baseAppOpts...)
+	app := NewTestChain(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, testapp.MakeConfig(ModuleBasics), wasm.EnableAllProposals, simapp.EmptyAppOptions{}, opts, baseAppOpts...)
 	if withGenesis {
 		return app, NewDefaultGenesisState()
 	}
