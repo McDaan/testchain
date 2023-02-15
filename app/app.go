@@ -32,7 +32,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	// simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	testparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -119,7 +119,7 @@ import (
 	erc20types "github.com/McDaan/testchain/x/erc20/types"
 	
 	//wasmappparams "github.com/CosmWasm/wasmd/app/params"
-	testparams "github.com/McDaan/testchain/params"
+	//testparams "github.com/McDaan/testchain/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
