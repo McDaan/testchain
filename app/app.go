@@ -472,6 +472,15 @@ func NewTestChain(
 	// - Airdrop Claims Middleware
 	// - Transfer
 
+	// create evidence keeper with router
+	evidenceKeeper := evidencekeeper.NewKeeper(
+		appCodec, keys[evidencetypes.StoreKey], &app.StakingKeeper, app.SlashingKeeper,
+	)
+	// If evidence needs to be handled for the app, set routes in router here and seal
+	app.EvidenceKeeper = *evidenceKeeper
+	evidenceRouter := evidencetypes.NewRouter()
+	app.evidenceKeeper.SetRouter(evidenceRouter)
+	
 	// create IBC module from bottom to top of stack
 	
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -537,13 +546,6 @@ func NewTestChain(
 	
 	// For wasmd we use the demo controller from https://github.com/cosmos/interchain-accounts but see notes below
 	// app.InterTxKeeper = intertxkeeper.NewKeeper(appCodec, keys[intertxtypes.StoreKey], app.ICAControllerKeeper, scopedInterTxKeeper)
-
-	// create evidence keeper with router
-	evidenceKeeper := evidencekeeper.NewKeeper(
-		appCodec, keys[evidencetypes.StoreKey], &app.StakingKeeper, app.SlashingKeeper,
-	)
-	// If evidence needs to be handled for the app, set routes in router here and seal
-	app.EvidenceKeeper = *evidenceKeeper
 
 	/****  Module Options ****/
 
