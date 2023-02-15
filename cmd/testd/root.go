@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
+	//wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	//"github.com/cosmos/cosmos-sdk/simapp/params"
