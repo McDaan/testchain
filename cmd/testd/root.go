@@ -292,7 +292,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
 		wasmapp.MakeEncodingConfig(),
-		wasm.EnableAllProposals,
+		app.GetWasmEnabledProposals(),
 		appOpts,
 		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
@@ -325,15 +325,15 @@ func (a appCreator) appExport(
 		return servertypes.ExportedApp{}, errors.New("application home not set")
 	}
 
-	var emptyWasmOpts []wasm.Option
+	//var emptyWasmOpts []wasm.Option
 	if height != -1 {
-		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), app.GetWasmEnabledProposals(), appOpts, []wasmkeeper.Option{})
 
 		if err := testApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), wasm.EnableAllProposals, appOpts, emptyWasmOpts)
+		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), app.GetWasmEnabledProposals(), appOpts, []wasmkeeper.Option{})
 	}
 
 	return testApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
