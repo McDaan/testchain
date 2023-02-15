@@ -26,7 +26,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
-	"github.com/McDaan/testchain/app"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
