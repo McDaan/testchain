@@ -118,9 +118,8 @@ import (
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
 	erc20types "github.com/McDaan/testchain/x/erc20/types"
 	
-	"github.com/McDaan/testchain/app"
 	//wasmappparams "github.com/CosmWasm/wasmd/app/params"
-	testparams "github.com/McDaan/testchain/app/params"
+	testparams "github.com/McDaan/testchain/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
