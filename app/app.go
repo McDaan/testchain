@@ -366,9 +366,9 @@ func NewTestChain(
 	// their scoped modules in `NewApp` with `ScopeToModule`
 	app.CapabilityKeeper.Seal()
 	
-	app.ScopedIBCKeeper = scopedIBCKeeper
-	app.ScopedWasmKeeper = scopedWasmKeeper
-	app.ScopedTransferKeeper = scopedTransferKeeper
+	//app.ScopedIBCKeeper = scopedIBCKeeper
+	//app.ScopedWasmKeeper = scopedWasmKeeper
+	//app.ScopedTransferKeeper = scopedTransferKeeper
 
 	// use custom Ethermint account for contracts
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
