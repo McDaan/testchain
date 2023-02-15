@@ -41,6 +41,7 @@ import (
 	srvflags "github.com/evmos/ethermint/server/flags"
 
 	"github.com/McDaan/testchain/app"
+	"github.com/McDaan/testchain"
 	cmdcfg "github.com/McDaan/testchain/cmd/config"
 	testkr "github.com/McDaan/testchain/crypto/keyring"
 	
@@ -292,7 +293,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
 		wasmapp.MakeEncodingConfig(),
-		app.GetWasmEnabledProposals(),
+		testchain.GetWasmEnabledProposals(),
 		appOpts,
 		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
@@ -327,13 +328,13 @@ func (a appCreator) appExport(
 
 	//var emptyWasmOpts []wasm.Option
 	if height != -1 {
-		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), app.GetWasmEnabledProposals(), appOpts, []wasmkeeper.Option{})
+		testApp = app.NewTestChain(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), testchain.GetWasmEnabledProposals(), appOpts, []wasmkeeper.Option{})
 
 		if err := testApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), app.GetWasmEnabledProposals(), appOpts, []wasmkeeper.Option{})
+		testApp = app.NewTestChain(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), wasmapp.MakeEncodingConfig(), testchain.GetWasmEnabledProposals(), appOpts, []wasmkeeper.Option{})
 	}
 
 	return testApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
