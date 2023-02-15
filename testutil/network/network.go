@@ -38,7 +38,7 @@ import (
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	testparams "github.com/McDaan/testchain/params"
+	"github.com/McDaan/testchain/params"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -101,7 +101,7 @@ type Config struct {
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig() Config {
-	encCfg := testparams.MakeConfig(app.ModuleBasics)
+	encCfg := params.MakeConfig(app.ModuleBasics)
 
 	return Config{
 		Codec:             encCfg.Marshaler,
@@ -128,7 +128,7 @@ func DefaultConfig() Config {
 }
 
 // NewAppConstructor returns a new Evmos AppConstructor
-func NewAppConstructor(encodingCfg testparams.EncodingConfig) AppConstructor {
+func NewAppConstructor(encodingCfg params.EncodingConfig) AppConstructor {
 	return func(val Validator) servertypes.Application {
 		// use this for clarity in argument list
 		var EmptyWasmOpts []wasm.Option
