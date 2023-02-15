@@ -27,7 +27,7 @@ import (
 
 	"github.com/McDaan/testchain/cmd/config"
 	"github.com/CosmWasm/wasmd/x/wasm"
-	testapp "github.com/McDaan/testchain/app"
+	testapp "github.com/McDaan/testchain/app/params"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/stretchr/testify/require"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
