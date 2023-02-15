@@ -110,6 +110,7 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/McDaan/testchain/client/docs/statik"
 
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	//ante "github.com/McDaan/testchain/app/ante"
 	authante "github.com/McDaan/testchain/app/ante"
 	"github.com/McDaan/testchain/x/erc20"
@@ -138,34 +139,6 @@ func init() {
 
 // Name defines the application binary name
 const Name = "testd"
-
-// We pull these out so we can set them with LDFLAGS in the Makefile
-var (
-	// If EnabledSpecificProposals is "", and this is "true", then enable all x/wasm proposals.
-	// If EnabledSpecificProposals is "", and this is not "true", then disable all x/wasm proposals.
-	ProposalsEnabled = "false"
-	// If set to non-empty string it must be comma-separated list of values that are all a subset
-	// of "EnableAllProposals" (takes precedence over ProposalsEnabled)
-	// https://github.com/CosmWasm/wasmd/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
-	EnableSpecificProposals = ""
-)
-
-// GetEnabledProposals parses the ProposalsEnabled / EnableSpecificProposals values to
-// produce a list of enabled proposals to pass into wasmd app.
-func GetEnabledProposals() []wasm.ProposalType {
-	if EnableSpecificProposals == "" {
-		if ProposalsEnabled == "true" {
-			return wasm.EnableAllProposals
-		}
-		return wasm.DisableAllProposals
-	}
-	chunks := strings.Split(EnableSpecificProposals, ",")
-	proposals, err := wasm.ConvertToProposals(chunks)
-	if err != nil {
-		panic(err)
-	}
-	return proposals
-}
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -201,6 +174,14 @@ var (
 		erc20.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
+	
+	// If EnabledSpecificProposals is "", and this is "true", then enable all x/wasm proposals.
+	// If EnabledSpecificProposals is "", and this is not "true", then disable all x/wasm proposals.
+	WasmProposalsEnabled = "true"
+	// If set to non-empty string it must be comma-separated list of values that are all a subset
+	// of "EnableAllProposals" (takes precedence over ProposalsEnabled)
+	// https://github.com/CosmWasm/wasmd/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
+	WasmEnableSpecificProposals = ""
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -227,6 +208,23 @@ var (
 	_ simapp.App              = (*TestApp)(nil)
 	_ ibctesting.TestingApp   = (*TestApp)(nil)
 )
+
+// GetEnabledProposals parses the ProposalsEnabled / EnableSpecificProposals values to
+// produce a list of enabled proposals to pass into wasmd app.
+func GetEnabledProposals() []wasm.ProposalType {
+	if EnableSpecificProposals == "" {
+		if ProposalsEnabled == "true" {
+			return wasm.EnableAllProposals
+		}
+		return wasm.DisableAllProposals
+	}
+	chunks := strings.Split(EnableSpecificProposals, ",")
+	proposals, err := wasm.ConvertToProposals(chunks)
+	if err != nil {
+		panic(err)
+	}
+	return proposals
+}
 
 // TestApp implements an extended ABCI application. It is an application
 // that may process transactions through Ethereum's EVM running atop of
