@@ -5,7 +5,7 @@ import (
 
 	"github.com/McDaan/testchain/x/erc20/keeper"
 	"github.com/McDaan/testchain/x/erc20/types"
-	minttypes "github.com/ArableProtocol/acrechain/x/mint/types"
+	minttypes "github.com/McDaan/testchain/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/ethereum/go-ethereum/common"
