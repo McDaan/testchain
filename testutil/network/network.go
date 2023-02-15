@@ -54,6 +54,7 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	
+	"github.com/McDaan/testchain/app"
 	testparams "github.com/McDaan/testchain/params"
 	//wasmapp "github.com/CosmWasm/wasmd/app"
 	"github.com/CosmWasm/wasmd/x/wasm"
@@ -102,7 +103,7 @@ type Config struct {
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig() Config {
-	encCfg := testparams.MakeConfig(ModuleBasics)
+	encCfg := testparams.MakeConfig(app.ModuleBasics)
 
 	return Config{
 		Codec:             encCfg.Marshaler,
