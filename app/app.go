@@ -118,7 +118,8 @@ import (
 	erc20keeper "github.com/McDaan/testchain/x/erc20/keeper"
 	erc20types "github.com/McDaan/testchain/x/erc20/types"
 	
-	wasmappparams "github.com/CosmWasm/wasmd/app/params"
+	//wasmappparams "github.com/CosmWasm/wasmd/app/params"
+	testparams "github.com/McDaan/testchain/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -296,7 +297,7 @@ func NewTestChain(
 	homePath string,
 	invCheckPeriod uint,
 	// encodingConfig simappparams.EncodingConfig,
-	encodingConfig wasmappparams.EncodingConfig,
+	encodingConfig testparams.EncodingConfig,
 	enabledProposals []wasm.ProposalType,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasm.Option,
