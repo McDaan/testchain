@@ -53,6 +53,7 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	
+	"github.com/McDaan/testchain/params"
 	"github.com/McDaan/testchain/app"
 	//wasmapp "github.com/CosmWasm/wasmd/app"
 	"github.com/CosmWasm/wasmd/x/wasm"
