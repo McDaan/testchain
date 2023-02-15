@@ -433,10 +433,6 @@ func NewTestChain(
 		app.AccountKeeper, app.BankKeeper, app.EvmKeeper,
 	)
 
-	app.GovKeeper = *govKeeper.SetHooks(
-		govtypes.NewMultiGovHooks(),
-	)
-
 	app.EvmKeeper = app.EvmKeeper.SetHooks(
 		evmkeeper.NewMultiEvmHooks(
 			app.Erc20Keeper.Hooks(),
@@ -528,6 +524,10 @@ func NewTestChain(
 	govKeeper := govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName),
 		app.AccountKeeper, app.BankKeeper, &stakingKeeper, govRouter,
+	)
+	
+	app.GovKeeper = *govKeeper.SetHooks(
+		govtypes.NewMultiGovHooks(),
 	)
 	
 	// For wasmd we use the demo controller from https://github.com/cosmos/interchain-accounts but see notes below
