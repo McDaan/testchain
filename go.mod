@@ -3,7 +3,7 @@ module github.com/McDaan/testchain
 go 1.19
 
 require (
-	github.com/ArableProtocol/acrechain v1.1.1
+	github.com/McDaan/testchain v0.1.3
 	github.com/CosmWasm/wasmd v0.29.2
 	github.com/armon/go-metrics v0.4.0
 	github.com/cosmos/cosmos-sdk v0.45.10
