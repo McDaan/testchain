@@ -1,4 +1,4 @@
-package encoding_test
+package params_test
 
 import (
 	"math/big"
