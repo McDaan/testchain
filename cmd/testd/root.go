@@ -50,7 +50,7 @@ import (
 	wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	//wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
 const (
@@ -137,9 +137,9 @@ func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
 		},
 	}
 
-	cfg := sdk.GetConfig()
-	cfg.SetAddressVerifier(wasmtypes.VerifyAddressLen())
-	cfg.Seal()
+	//cfg := sdk.GetConfig()
+	//cfg.SetAddressVerifier(wasmtypes.VerifyAddressLen())
+	//cfg.Seal()
 
 	rootCmd.AddCommand(
 		ethermintclient.ValidateChainID(
