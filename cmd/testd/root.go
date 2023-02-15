@@ -41,7 +41,6 @@ import (
 	srvflags "github.com/evmos/ethermint/server/flags"
 
 	"github.com/McDaan/testchain/app"
-	"github.com/McDaan/testchain"
 	cmdcfg "github.com/McDaan/testchain/cmd/config"
 	testkr "github.com/McDaan/testchain/crypto/keyring"
 	
