@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	//wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
+	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	//"github.com/cosmos/cosmos-sdk/simapp/params"
@@ -49,14 +49,14 @@ import (
 	wasmparams "github.com/CosmWasm/wasmd/app/params"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	//wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
 const (
 	EnvPrefix = "TEST"
 )
 
-/* func AddGenesisWasmMsgCmd(defaultNodeHome string) *cobra.Command {
+func AddGenesisWasmMsgCmd(defaultNodeHome string) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        "add-wasm-genesis-message",
 		Short:                      "Wasm genesis subcommands",
@@ -74,7 +74,7 @@ const (
 	)
 
 	return txCmd
-} */
+}
 
 // NewRootCmd creates a new root command for testd. It is called once in the
 // main function.
@@ -137,7 +137,7 @@ func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
 	}
 
 	cfg := sdk.GetConfig()
-	//cfg.SetAddressVerifier(wasmtypes.VerifyAddressLen())
+	cfg.SetAddressVerifier(wasmtypes.VerifyAddressLen())
 	cfg.Seal()
 
 	rootCmd.AddCommand(
@@ -150,7 +150,7 @@ func NewRootCmd() (*cobra.Command, wasmparams.EncodingConfig) {
 		genutilcli.GenTxCmd(app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
-		//AddGenesisWasmMsgCmd(app.DefaultNodeHome),
+		AddGenesisWasmMsgCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		NewTestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
