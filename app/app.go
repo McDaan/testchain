@@ -541,7 +541,7 @@ func NewTestChain(
 		wasmOpts...,
 	)
 	
-	ibcRouter.AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.IBCKeeper.ChannelKeeper))
+	ibcRouter.AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper))
 	
 	//var wasmStack porttypes.IBCModule
 	//wasmStack = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper)
@@ -557,7 +557,7 @@ func NewTestChain(
 		AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&app.Erc20Keeper))
 	
 	if len(enabledProposals) != 0 {
-		govRouter.AddRoute(wasmtypes.RouterKey, wasmkeeper.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
+		govRouter.AddRoute(wasmtypes.RouterKey, wasmkeeper.NewWasmProposalHandler(app.WasmKeeper, enabledProposals))
 	}
 	
 	govKeeper := govkeeper.NewKeeper(
