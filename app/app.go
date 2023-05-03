@@ -271,7 +271,7 @@ type TestApp struct {
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	scopedIBCICAHostKeeper  capabilitykeeper.ScopedKeeper
+	ScopedIBCICAHostKeeper  capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper     capabilitykeeper.ScopedKeeper
 
