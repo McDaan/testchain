@@ -364,7 +364,7 @@ func NewTestChain(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
 
 	ScopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
-	ScopedIBCICAHostKeeper = app.CapabilityKeeper.ScopeToModule(ibcicahosttypes.SubModuleName)
+	ScopedIBCICAHostKeeper := app.CapabilityKeeper.ScopeToModule(ibcicahosttypes.SubModuleName)
 	ScopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	ScopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	
