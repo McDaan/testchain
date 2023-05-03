@@ -90,7 +90,7 @@ import (
 	ibcicahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	ibcicahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
 	ibcicahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	//ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
 	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
