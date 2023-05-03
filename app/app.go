@@ -364,17 +364,19 @@ func NewTestChain(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
 
 	ScopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
-	app.scopedIBCICAHostKeeper = app.CapabilityKeeper.ScopeToModule(ibcicahosttypes.SubModuleName)
+	ScopedIBCICAHostKeeper = app.CapabilityKeeper.ScopeToModule(ibcicahosttypes.SubModuleName)
 	ScopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	ScopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
+	
+	app.ScopedIBCKeeper = ScopedIBCKeeper
+	app.ScopedIBCICAHostKeeper = ScopedIBCICAHostKeeper
+	app.ScopedWasmKeeper = ScopedWasmKeeper
+	app.ScopedTransferKeeper = ScopedTransferKeeper
 
+	
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
 	// their scoped modules in `NewApp` with `ScopeToModule`
 	app.CapabilityKeeper.Seal()
-	
-	app.ScopedIBCKeeper = ScopedIBCKeeper
-	app.ScopedWasmKeeper = ScopedWasmKeeper
-	app.ScopedTransferKeeper = ScopedTransferKeeper
 
 	// use custom Ethermint account for contracts
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
