@@ -482,7 +482,7 @@ func NewTestChain(
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
-		app.scopedIBCICAHostKeeper,
+		app.ScopedIBCICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
 	
